@@ -27,6 +27,7 @@
       "scripthost"
     ]
   },
+  "types": ["element-plus/global"],
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",

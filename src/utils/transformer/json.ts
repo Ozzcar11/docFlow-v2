@@ -4,7 +4,7 @@ import Graph, { Edge, Node } from "@/utils/graph";
 // export type JSONGraphData = Partial<Graph> & Pick<Graph, 'name' | 'nodes' | 'edges'>
 // export type JSONGraphData = Partial<Graph> & Pick<Graph, 'name'> & {
 export type JSONGraphData = {
-    'main': {
+    'main'?: {
         'name': string
     },
     'nodes': Array<Partial<Node> & Pick<Node, 'id' | 'appearance' | 'gd'>>,
@@ -16,7 +16,7 @@ export class JSONTransformer {
     in_json(graph: Graph, data: JSONGraphData) {
         graph.clear();
 
-        graph.name = data.main.name;
+      //   graph.name = data.main.name;
         for (const node of data.nodes) {
             graph.add_node(node)
         }

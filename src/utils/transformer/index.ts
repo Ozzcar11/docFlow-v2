@@ -1,6 +1,5 @@
 import { Graph as AntvGraph } from "@antv/x6";
 import { default as Graph, } from "../graph";
-import { DocassembleTransformer } from "./docassemble";
 import { AntvisTransformer } from "./antvis";
 import { JSONGraphData, JSONTransformer } from "./json";
 
@@ -14,15 +13,12 @@ export default class {
     graph: Graph;
     json: JSONTransformer;
     antvis: AntvisTransformer;
-    docassemble: DocassembleTransformer;
-
     
     constructor(graph?: Graph) {
         this.graph = graph ?? new Graph();
 
         this.json = new JSONTransformer()
         this.antvis = new AntvisTransformer()
-        this.docassemble = new DocassembleTransformer()
     }
 
     // json
@@ -47,11 +43,5 @@ export default class {
 
     out_antv() {
         return this.antvis.out(this.graph)
-    }
-
-    // docassemble
-    
-    out_docassemble() {
-        return this.docassemble.out(this.graph)
     }
 }

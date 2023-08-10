@@ -15,13 +15,13 @@
       </div>
       <div
         id="modeler-container-box"
-        class="flex flex-grow border-b-0 border-gray-300/90"
+        class="w-auto flex flex-grow border-b-0 border-gray-300/90"
         style="border-width: 3px"
       >
         <div id="modeler-container" style="flex: 1"></div>
       </div>
       <div
-        class="w-80 flex-initial bg-gray-100 border-t border-gray-200 overflow-y-auto"
+        class="w-1/4 flex-initial bg-gray-100 border-t border-gray-200 overflow-y-auto"
       >
         <GraphModelerConfigBar :cell="selected_cell"></GraphModelerConfigBar>
       </div>
@@ -61,6 +61,11 @@ const graphData: Ref<JSONGraphData> = ref({
       },
       gd: {
         name: "Первый шаг",
+        stageData: {
+          checkNames: [],
+          responsibleNames: [],
+          watchersNames: [],
+        },
         configData: [
           {
             component: "BaseInput",
@@ -83,6 +88,11 @@ const graphData: Ref<JSONGraphData> = ref({
       },
       gd: {
         name: "Второй шаг",
+        stageData: {
+          checkNames: [],
+          responsibleNames: [],
+          watchersNames: [],
+        },
         configData: [
           {
             component: "BaseInput",
@@ -101,6 +111,11 @@ const graphData: Ref<JSONGraphData> = ref({
       },
       gd: {
         name: "Третий шаг",
+        stageData: {
+          checkNames: [],
+          responsibleNames: [],
+          watchersNames: [],
+        },
         configData: [
           {
             component: "BaseInput",
@@ -119,6 +134,11 @@ const graphData: Ref<JSONGraphData> = ref({
       },
       gd: {
         name: "Четвёртый шаг",
+        stageData: {
+          checkNames: [],
+          responsibleNames: [],
+          watchersNames: [],
+        },
         configData: [
           {
             component: "BaseInput",
@@ -137,6 +157,11 @@ const graphData: Ref<JSONGraphData> = ref({
       },
       gd: {
         name: "Пятый шаг",
+        stageData: {
+          checkNames: [],
+          responsibleNames: [],
+          watchersNames: [],
+        },
         configData: [
           {
             component: "BaseInput",

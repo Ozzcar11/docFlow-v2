@@ -9,6 +9,11 @@ export interface Node {
 
   gd: {
     name?: string;
+    stageData: {
+      checkNames: string[];
+      responsibleNames: string[];
+      watchersNames: string[];
+    };
     configData: Partial<{
       label: string;
       component: string;
@@ -36,6 +41,11 @@ export const NodeDefault: Partial<Node> = {
   },
   gd: {
     name: "Новый элемент",
+    stageData: {
+      checkNames: [],
+      responsibleNames: [],
+      watchersNames: [],
+    },
     configData: [
       {
         component: "",

@@ -4,6 +4,7 @@
   </template>
   <template v-else>
     <div class="block p-2 text-gray-700">{{ current_field.name }}</div>
+
     <div v-for="(item, idx) in configData" :key="idx">
       <component
         :is="configComponents[item.component as keyof typeof configComponents]"
@@ -139,6 +140,7 @@ const configData: Ref<NodeConfig[]> = ref([]);
 watch(current_field, () => {
   if (typeof current_field.value === "object") {
     configData.value = current_field.value.configData;
+    console.log(current_field.value);
   } else configData.value = [];
 });
 

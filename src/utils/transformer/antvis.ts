@@ -4,7 +4,7 @@ import {
   AntvNodeData,
   default_edge_attrs,
   default_edge_label,
-  antv_metadata,
+  antvMetadata,
 } from "../antv-model";
 import { ITransformer } from ".";
 import { uuid } from "../data/uuid";
@@ -19,11 +19,8 @@ export class AntvisTransformer implements ITransformer {
       edges: antv_graph.getEdges(),
     };
 
-    console.log(local_data);
-
     for (const loc_node of local_data.nodes) {
       const loc_node_data = loc_node.getData() as AntvNodeData;
-      console.log(loc_node_data);
 
       const rem_node = {
         id: loc_node.id,
@@ -32,8 +29,8 @@ export class AntvisTransformer implements ITransformer {
         appearance: {
           x: loc_node.getPosition().x ?? 0,
           y: loc_node.getPosition().y ?? 0,
-          width: loc_node.getSize().width ?? antv_metadata.width,
-          height: loc_node.getSize().height ?? antv_metadata.height,
+          width: loc_node.getSize().width ?? antvMetadata().width,
+          height: loc_node.getSize().height ?? antvMetadata().height,
           //   height: loc_node.getSize().height
           //       ?? node_types[loc_node_data.gd.type].antv_metadata.height,
         },
@@ -82,7 +79,7 @@ export class AntvisTransformer implements ITransformer {
     Object.values(graph.nodes).forEach((node) => {
       let node_ser = {
         // default values (includes ports etc); can be overwritten after spread
-        ...antv_metadata,
+        ...antvMetadata(),
         //  ...node_types[node.gd.type].antv_metadata,
 
         // id: `node-${node.id}`,
@@ -100,7 +97,7 @@ export class AntvisTransformer implements ITransformer {
       node_ser = Object.assign(
         {},
         //  node_types[node.gd.type].antv_metadata ?? node_types.notice.antv_metadata ?? {},
-        antv_metadata ?? {},
+        antvMetadata() ?? {},
         node_ser,
       );
 

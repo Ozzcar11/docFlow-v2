@@ -14,44 +14,39 @@
             End
         </div> 
         -->
-
-    <div
-      v-for="node of graphData.nodes"
-      :key="node.id"
-      :data-id="node.id"
-      class="node"
-      @mousedown="startDrag($event)"
-    >
-      {{ node.gd.name ?? "Новый элемент" }}
+    <!-- Цикл по нодам из graph -->
+    <div v-for="node of graphData.nodes" :key="node.id" :data-id="node.id" class="node" @mousedown="startDrag($event)">
+      {{ node.nodeConfig?.name }}
+      <!-- {{ node.nodeConfig?.name || "Новый элемент" }} -->
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Addon, Graph } from "@antv/x6";
-import { Dnd } from "@antv/x6/lib/addon/dnd";
+import { Addon, Graph } from "@antv/x6"
+import { Dnd } from "@antv/x6/lib/addon/dnd"
 
-import { onMounted, Ref, ref, watch } from "vue";
-import { antv_metadata } from "@/utils/antv-model";
-import { JSONGraphData } from "@/utils/transformer/json";
+import { onMounted, Ref, ref, watch } from "vue"
+import { antvMetadata } from "@/utils/antv-model"
+import { JSONGraphData } from "@/utils/transformer/json"
 
 const props = defineProps<{
-  graph: Graph | undefined;
-  graphData: JSONGraphData;
-}>();
+  graph: Graph | undefined
+  graphData: JSONGraphData
+}>()
 
-const dnd: Ref<Dnd | undefined> = ref();
+const dnd: Ref<Dnd | undefined> = ref()
 
 onMounted(() => {
   // console.log(dnd.value);
-});
+})
 
 watch(
   () => props.graph,
   (value: typeof props.graph) => {
-    if (typeof value !== "undefined") init_dnd(value);
+    if (typeof value !== "undefined") init_dnd(value)
   },
-);
+)
 
 const init_dnd = (graph: Graph) => {
   dnd.value = new Addon.Dnd({
@@ -59,27 +54,27 @@ const init_dnd = (graph: Graph) => {
     scaled: false,
     animation: true,
     validateNode(droppingNode) {
-      droppingNode.updateData({ is_stencil_node: undefined });
-      return true;
+      droppingNode.updateData({ is_stencil_node: undefined })
+      return true
     },
-  });
-};
+  })
+}
 
 const startDrag = (e: MouseEvent) => {
-  if (typeof props.graph == "undefined") return false;
+  if (typeof props.graph == "undefined") return false
 
-  const target = e.currentTarget as HTMLElement;
+  const target = e.currentTarget as HTMLElement
 
-  const node = props.graph.createNode(antv_metadata);
+  const nodeData = props.graphData.nodes.find((item) => item.id === target.dataset.id)
 
-  const nodeData = props.graphData.nodes.find(
-    (item) => item.id === target.dataset.id,
-  );
+  const node = props.graph.createNode(antvMetadata(nodeData))
 
-  node.setData({ is_stencil_node: true, nodeData });
+//   delete nodeData?.nodeConfig
 
-  dnd.value?.start(node, e);
-};
+  node.setData({ is_stencil_node: true, nodeData })
+
+  dnd.value?.start(node, e)
+}
 </script>
 
 <style lang="scss">

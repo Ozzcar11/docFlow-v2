@@ -1,15 +1,11 @@
 <template>
-  <template v-if="cell == null">
+  <template v-if="nodeData === null">
     <span class="block p-2 text-gray-700">Выберите элемент</span>
   </template>
   <template v-else>
-    <div class="block p-2 text-gray-700">{{ current_field.name }}</div>
-
-    <div v-for="(item, idx) in configData" :key="idx">
-      <component
-        :is="configComponents[item.component as keyof typeof configComponents]"
-        v-model="item.data"
-      ></component>
+    <BaseInput v-model="nodeName" />
+    <div v-for="(item, idx) in nodeData.gd.configData" :key="idx">
+      <component :is="configComponents[item.component as keyof typeof configComponents]" v-model="item.data"></component>
     </div>
   </template>
   <!-- <div v-for="(item, index) in current_fields.configData" :key="index">
@@ -118,59 +114,46 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from "vue";
-import type { Ref } from "vue";
+import { ref, watch, computed } from "vue"
+import type { Ref } from "vue"
 
-import { NodeConfig } from "@/utils/antv-model";
+import type { Node, NodeConfig } from "@/utils/graph"
 
-import { Cell } from "@antv/x6";
+import { Cell } from "@antv/x6"
 
-import { configComponents } from "@/utils/config-components";
+import { configComponents } from "@/utils/config-components"
+import BaseInput from "../Base/BaseInput.vue"
 
 const props = defineProps<{
-  cell: Cell | undefined;
-}>();
+  cell: Cell | undefined
+}>()
 
-const current_field = computed(() => {
-  return props.cell?.getData()?.nodeData.gd ?? "Выберите элемент";
-});
+const emit = defineEmits(["changeNode"])
 
-const configData: Ref<NodeConfig[]> = ref([]);
+const nodeData: Ref<Node | null> = ref(null)
 
-watch(current_field, () => {
-  if (typeof current_field.value === "object") {
-    configData.value = current_field.value.configData;
-    console.log(current_field.value);
-  } else configData.value = [];
-});
+watch(
+  () => props.cell?.getData().nodeData,
+  (value) => {
+    nodeData.value = value ? value : null
+  },
+  { deep: true },
+)
 
-// const node_content_ref = ref("");
-// const node_content = computed({
-//   get() {
-//     node_content_ref.value;
-//     return (props.cell as Node).getData().gd.content ?? "";
-//   },
-//   set(value: string) {
-//     node_content_ref.value = value;
-//     (props.cell as Node).setData({ gd: { content: value } });
-//   },
-// });
-//
-// const node_variable_ref = ref("");
-// const node_variable = computed({
-//   get() {
-//     node_variable_ref.value;
-//     return ((props.cell as Node).getData() as AntvNodeData).gd.variable ?? "";
-//   },
-//   set(value: string) {
-//     node_variable_ref.value = value;
-//     (props.cell as Node).setData({
-//       gd: { variable: value != "" ? value : null },
-//     });
-//   },
-// });
-//
+const nodeNameRef = ref("")
+const nodeName = computed({
+  get() {
+    nodeNameRef.value
+    return props.cell?.getData().nodeConfig.name ?? ""
+  },
+  set(value) {
+    nodeNameRef.value = value
+    props.cell?.setData({ nodeConfig: { name: value } })
+    emit("changeNode", props.cell?.getData())
+  },
+})
 // const edge_content_ref = ref("");
+
 // const edge_content = computed({
 //   get() {
 //     const edge = props.cell as Edge;

@@ -1,20 +1,13 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-
-const props = defineProps<{
-   modelValue: string | number
+defineProps<{
+  modelValue: string | number | undefined
 }>()
-
 </script>
 
-
 <template>
-   <div>
-      <el-input :modelValue="modelValue" placeholder="" @input="$emit('update:modelValue', $event)"/>
-   </div>
+  <div>
+    <el-input :modelValue="modelValue" placeholder="" @input="$emit('update:modelValue', $event)" />
+  </div>
 </template>
 
-
-<style lang="scss">
-
-</style>
+<style lang="scss"></style>

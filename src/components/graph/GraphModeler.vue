@@ -1,53 +1,38 @@
 <template>
-  <div
-    class="overflow-hidden h-screen rounded-lg border border-slate-900/20 hover:shadow-sm hover:border-slate-900/30 transition ease-in-out"
-  >
+  <div class="overflow-hidden h-screen rounded-lg border border-slate-900/20 hover:shadow-sm hover:border-slate-900/30 transition ease-in-out">
     <div class="w-full bg-gray-100">
       <GraphModelerToolbar :graph="graph" :init_modeler="init_modeler" />
     </div>
     <div class="w-full h-screen flex">
       <div class="w-30 flex-initial bg-gray-100 border-t border-gray-200">
-        <GraphModelerElementsBar
-          v-if="graph !== null"
-          :graph="graph"
-          :graphData="graphData"
-        ></GraphModelerElementsBar>
+        <GraphModelerElementsBar v-if="graph !== null" :graph="graph" :graphData="graphData"></GraphModelerElementsBar>
       </div>
-      <div
-        id="modeler-container-box"
-        class="w-auto flex flex-grow border-b-0 border-gray-300/90"
-        style="border-width: 3px"
-      >
+      <div id="modeler-container-box" class="w-auto flex flex-grow border-b-0 border-gray-300/90" style="border-width: 3px">
         <div id="modeler-container" style="flex: 1"></div>
       </div>
-      <div
-        class="w-1/4 flex-initial bg-gray-100 border-t border-gray-200 overflow-y-auto"
-      >
-        <GraphModelerConfigBar :cell="selected_cell"></GraphModelerConfigBar>
+      <div class="w-1/4 flex-initial bg-gray-100 border-t border-gray-200 overflow-y-auto">
+        <GraphModelerConfigBar :cell="selected_cell" @changeNode="changeNode"></GraphModelerConfigBar>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, Ref, ref } from "vue";
+import { onMounted, Ref, ref } from "vue"
 
-import { Cell, Graph } from "@antv/x6";
+import { Cell, Graph } from "@antv/x6"
 
-import GraphModelerConfigBar from "./GraphModelerConfigBar.vue";
-import GraphModelerElementsBar from "./GraphModelerElementsBar.vue";
-import GraphModelerToolbar from "./GraphModelerToolbar.vue";
+import GraphModelerConfigBar from "./GraphModelerConfigBar.vue"
+import GraphModelerElementsBar from "./GraphModelerElementsBar.vue"
+import GraphModelerToolbar from "./GraphModelerToolbar.vue"
 
-import { JSONGraphData } from "@/utils/transformer/json";
+import { JSONGraphData } from "@/utils/transformer/json"
 
-import {
-  graph_options_defaults,
-  graph_register_defaults,
-} from "@/utils/antv-model";
+import { graph_options_defaults, graph_register_defaults, AntvNodeData } from "@/utils/antv-model"
 
 onMounted(() => {
-  init_modeler();
-});
+  init_modeler()
+})
 
 const graphData: Ref<JSONGraphData> = ref({
   nodes: [
@@ -60,7 +45,6 @@ const graphData: Ref<JSONGraphData> = ref({
         height: 36,
       },
       gd: {
-        name: "Первый шаг",
         stageData: {
           checkNames: [],
           responsibleNames: [],
@@ -76,6 +60,10 @@ const graphData: Ref<JSONGraphData> = ref({
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
+      },
+      nodeConfig: {
+        name: "Первый шаг",
+        color: "#fff",
       },
     },
     {
@@ -87,7 +75,6 @@ const graphData: Ref<JSONGraphData> = ref({
         height: 36,
       },
       gd: {
-        name: "Второй шаг",
         stageData: {
           checkNames: [],
           responsibleNames: [],
@@ -99,6 +86,10 @@ const graphData: Ref<JSONGraphData> = ref({
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
+      },
+      nodeConfig: {
+        name: "Второй шаг",
+        color: "#fff",
       },
     },
     {
@@ -110,7 +101,6 @@ const graphData: Ref<JSONGraphData> = ref({
         height: 36,
       },
       gd: {
-        name: "Третий шаг",
         stageData: {
           checkNames: [],
           responsibleNames: [],
@@ -122,6 +112,10 @@ const graphData: Ref<JSONGraphData> = ref({
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
+      },
+      nodeConfig: {
+        name: "Третий шаг",
+        color: "#fff",
       },
     },
     {
@@ -133,7 +127,6 @@ const graphData: Ref<JSONGraphData> = ref({
         height: 36,
       },
       gd: {
-        name: "Четвёртый шаг",
         stageData: {
           checkNames: [],
           responsibleNames: [],
@@ -145,6 +138,10 @@ const graphData: Ref<JSONGraphData> = ref({
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
+      },
+      nodeConfig: {
+        name: "Четвёртый шаг",
+        color: "#fff",
       },
     },
     {
@@ -156,7 +153,6 @@ const graphData: Ref<JSONGraphData> = ref({
         height: 36,
       },
       gd: {
-        name: "Пятый шаг",
         stageData: {
           checkNames: [],
           responsibleNames: [],
@@ -168,6 +164,10 @@ const graphData: Ref<JSONGraphData> = ref({
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
+      },
+      nodeConfig: {
+        name: "Пятый шаг",
+        color: "#fff",
       },
     },
   ],
@@ -205,41 +205,47 @@ const graphData: Ref<JSONGraphData> = ref({
       },
     },
   ],
-});
+})
 
-const graph: Ref<Graph | undefined> = ref();
+const graph: Ref<Graph | undefined> = ref()
 
-const selected_cell: Ref<Cell | undefined> = ref();
+const selected_cell: Ref<Cell | undefined> = ref()
 
 const register_events = (graph: Graph) => {
   graph.on("cell:selected", ({ cell, options }) => {
-    if (selected_cell.value != cell) selected_cell.value = cell;
-  });
+    if (selected_cell.value != cell) selected_cell.value = cell
+  })
 
   graph.on("cell:unselected", ({ cell, options }) => {
-    if (selected_cell.value != null) selected_cell.value = undefined;
-  });
+    if (selected_cell.value != null) selected_cell.value = undefined
+  })
 
   graph.on("blank:click", ({ e, x, y }) => {
-    if (selected_cell.value != null) selected_cell.value = undefined;
-  });
-};
+    if (selected_cell.value != null) selected_cell.value = undefined
+  })
+}
 
 const init_modeler = () => {
-  const container = document.getElementById("modeler-container")!;
+  const container = document.getElementById("modeler-container")!
 
   graph.value = new Graph({
     ...graph_options_defaults,
 
     autoResize: true,
     container,
-  });
+  })
 
   if (graph.value != undefined) {
-    graph_register_defaults(graph.value);
-    register_events(graph.value);
+    graph_register_defaults(graph.value)
+    register_events(graph.value)
   }
-};
+}
+
+const changeNode = (val: AntvNodeData) => {
+  const resValue = { ...val }
+  resValue.nodeData.nodeConfig = val.nodeConfig
+  graphData.value.nodes = graphData.value.nodes.map((item) => (item = item.id === val?.nodeData.id ? resValue.nodeData : item))
+}
 </script>
 
 <style lang="scss">

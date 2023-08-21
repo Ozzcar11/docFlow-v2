@@ -1,16 +1,16 @@
 <template>
   <div class="overflow-hidden h-screen rounded-lg border border-slate-900/20 hover:shadow-sm hover:border-slate-900/30 transition ease-in-out">
-    <div class="w-full bg-gray-100">
+    <!-- <div class="w-full bg-gray-100">
       <GraphModelerToolbar :graph="graph" :init_modeler="init_modeler" />
-    </div>
+    </div> -->
     <div class="w-full h-screen flex">
-      <div class="w-30 flex-initial bg-gray-100 border-t border-gray-200">
+      <div class="w-[25rem] flex-initial border-gray-300 border-r relative">
         <GraphModelerElementsBar v-if="graph !== null" :graph="graph" :graphData="graphData"></GraphModelerElementsBar>
       </div>
       <div id="modeler-container-box" class="w-auto flex flex-grow border-b-0 border-gray-300/90" style="border-width: 3px">
         <div id="modeler-container" style="flex: 1"></div>
       </div>
-      <div class="w-1/4 flex-initial bg-gray-100 border-t border-gray-200 overflow-y-auto">
+      <div class="w-[25rem] flex-initial bg-gray-100 border-t border-gray-200 overflow-y-auto">
         <GraphModelerConfigBar :cell="selected_cell" @changeNode="changeNode"></GraphModelerConfigBar>
       </div>
     </div>
@@ -22,13 +22,15 @@ import { onMounted, Ref, ref } from "vue"
 
 import { Cell, Graph } from "@antv/x6"
 
+import { Node } from "@/utils/graph"
+
 import GraphModelerConfigBar from "./GraphModelerConfigBar.vue"
 import GraphModelerElementsBar from "./GraphModelerElementsBar.vue"
 import GraphModelerToolbar from "./GraphModelerToolbar.vue"
 
 import { JSONGraphData } from "@/utils/transformer/json"
 
-import { graph_options_defaults, graph_register_defaults, AntvNodeData } from "@/utils/antv-model"
+import { graph_options_defaults, graph_register_defaults } from "@/utils/antv-model"
 
 onMounted(() => {
   init_modeler()
@@ -241,10 +243,12 @@ const init_modeler = () => {
   }
 }
 
-const changeNode = (val: AntvNodeData) => {
-  const resValue = { ...val }
-  resValue.nodeData.nodeConfig = val.nodeConfig
-  graphData.value.nodes = graphData.value.nodes.map((item) => (item = item.id === val?.nodeData.id ? resValue.nodeData : item))
+const changeNode = (val: Partial<Node> & Pick<Node, "id" | "appearance" | "gd">) => {
+  graphData.value.nodes = graphData.value.nodes.map((item) => (item = item.id === val?.id ? val : item))
+
+//   const resValue = { ...val }
+//   resValue.nodeData.nodeConfig = val.nodeConfig
+//   graphData.value.nodes = graphData.value.nodes.map((item) => (item = item.id === val?.nodeData.id ? resValue.nodeData : item))
 }
 </script>
 

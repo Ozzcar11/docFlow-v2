@@ -29,7 +29,7 @@ defineProps<{
     }
   }
   .el-input__inner {
-    padding: 8px 12px 8px 0px;
+   padding: 8px 12px 8px 4px;
     &:focus {
       box-shadow: none;
     }

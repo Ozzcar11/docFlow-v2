@@ -1,11 +1,23 @@
 <template>
   <template v-if="nodeData === null">
-    <span class="block p-2 text-gray-700">Выберите элемент</span>
+    <span class="block text-center opacity-30 text-xl">Выберите элемент</span>
   </template>
   <template v-else>
-    <BaseInput v-model="nodeName" />
+    <BaseInput twClass="text-xl" class="mb-5" placeholder="Название" v-model="nodeName" />
+    <div class="grid grid-cols-2 gap-y-2 my-5">
+      <div class="text-sm text-gray-600 flex items-center">Проверяющий</div>
+      <BaseSelect v-model="nodeData.gd.stageData.checkNames" :options="users" />
+      <div class="text-sm text-gray-600 flex items-center">Ответственный</div>
+      <BaseSelect v-model="nodeData.gd.stageData.responsibleNames" :options="users" />
+      <div class="text-sm text-gray-600 flex items-center">Наблюдатели</div>
+      <BaseSelect v-model="nodeData.gd.stageData.watchersNames" :options="users" />
+    </div>
+    <hr class="my-5" />
     <div v-for="(item, idx) in nodeData.gd.configData" :key="idx">
       <component :is="configComponents[item.component as keyof typeof configComponents]" v-model="item.data"></component>
+    </div>
+    <div class="mt-4">
+      <BaseSelectComponent />
     </div>
   </template>
   <!-- <div v-for="(item, index) in current_fields.configData" :key="index">
@@ -117,18 +129,44 @@
 import { ref, watch, computed } from "vue"
 import type { Ref } from "vue"
 
-import type { Node, NodeConfig } from "@/utils/graph"
+import type { Node } from "@/utils/graph"
 
 import { Cell } from "@antv/x6"
 
 import { configComponents } from "@/utils/config-components"
+
 import BaseInput from "../Base/BaseInput.vue"
+import BaseSelect from "../Base/BaseSelect.vue"
+import BaseSelectComponent from "../Base/BaseSelectComponent.vue"
 
 const props = defineProps<{
   cell: Cell | undefined
 }>()
 
 const emit = defineEmits(["changeNode"])
+
+const users = [
+  {
+    value: "1",
+    label: "Атав",
+  },
+  {
+    value: "2",
+    label: "Мухтар",
+  },
+  {
+    value: "3",
+    label: "Рашид",
+  },
+  {
+    value: "4",
+    label: "Залимхан",
+  },
+  {
+    value: "5",
+    label: "Иса",
+  },
+]
 
 const nodeData: Ref<Node | null> = ref(null)
 

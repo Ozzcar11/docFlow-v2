@@ -32,7 +32,6 @@
 </template>
 
 <script lang="ts" setup>
-// https://github.com/antvis/X6/blob/master/sites/x6-sites-demos/packages/tutorial/basic/dnd/dnd/src/app.tsx
 
 import { nextTick, Ref, ref } from 'vue';
 import { Graph } from '@antv/x6';
@@ -44,7 +43,6 @@ import { Modal } from '@/utils/modal';
 
 const toast = useToast();
 
-/* Modal definitions */
 const el_modal_import_text: Ref<HTMLElement | null> = ref(null);
 const modal_import: Modal<{ text: string }> = new Modal({ text: '' }, {
    onOpen: () => {
@@ -73,12 +71,6 @@ const modal_import_import = () => {
       return;
    }
 
-   // Step 1: find JSON by boundary.
-   // Step 2: if boundary not exists, assume whole is JSON.
-   // Boundary requirements:
-   // Format: [START INLINE GRAPHDOC EXPORT]...{CONTENT}...[END INLINE GRAPHDOC EXPORT]
-   //  - The dots represent any 5 characters before encountering the accolades (for matching next to comments).
-   //  - Regex: /\[START INLINE GRAPHDOC EXPORT\].{0,5}(\{.*\}).{0,5}?\[END INLINE GRAPHDOC EXPORT\]/s
 
    const boundary_result = import_cont.match(/\[START INLINE GRAPHDOC EXPORT\].{0,5}(\{.*\}).{0,5}?\[END INLINE GRAPHDOC EXPORT\]/s);
    if (boundary_result && boundary_result[1]) {
@@ -89,10 +81,9 @@ const modal_import_import = () => {
    try {
       import_json = JSON.parse(import_cont);
       if (!import_json)
-         throw Error(); // to trigger same exception
+         throw Error();
    } catch (e) {
       toast.error("Data does not contain valid JSON, or does not contain the GraphDoc boundary specifier.")
-      // modal_import.data.error = "Data does not contain valid JSON, or does not contain the GraphDoc boundary specifier."
       return;
    }
 
@@ -100,7 +91,6 @@ const modal_import_import = () => {
       !Object.hasOwnProperty.call(import_json, "nodes") ||
       !Object.hasOwnProperty.call(import_json, "edges")) {
       toast.error("Data does not include one of the required properties: 'main', 'nodes' or 'edges'.");
-      // modal_import.data.error = "Data does not include one of the required properties: 'main', 'nodes' or 'edges'."
       return;
    }
 
@@ -166,7 +156,6 @@ const item_clear = () => {
 
    if (confirm("Are you sure you want to reset your workspace?")) {
       props.graph?.removeCells(props.graph.getCells());
-      // TODO: set view to original state
    }
 }
 

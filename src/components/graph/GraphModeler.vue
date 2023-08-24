@@ -10,7 +10,7 @@
       <div id="modeler-container-box" class="w-auto flex flex-grow border-b-0 border-gray-300/90" style="border-width: 3px">
         <div id="modeler-container" style="flex: 1"></div>
       </div>
-      <div class="w-[25rem] flex-initial bg-gray-100 border-t border-gray-200 overflow-y-auto">
+      <div class="w-[25rem] flex-initial border-t border-gray-200 overflow-y-auto p-5">
         <GraphModelerConfigBar :cell="selected_cell" @changeNode="changeNode"></GraphModelerConfigBar>
       </div>
     </div>
@@ -26,7 +26,6 @@ import { Node } from "@/utils/graph"
 
 import GraphModelerConfigBar from "./GraphModelerConfigBar.vue"
 import GraphModelerElementsBar from "./GraphModelerElementsBar.vue"
-import GraphModelerToolbar from "./GraphModelerToolbar.vue"
 
 import { JSONGraphData } from "@/utils/transformer/json"
 

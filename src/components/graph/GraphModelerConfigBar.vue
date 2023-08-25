@@ -182,11 +182,11 @@ const nodeNameRef = ref("")
 const nodeName = computed({
   get() {
     nodeNameRef.value
-    return props.cell?.getData().nodeConfig.name ?? ""
+    return props.cell?.getData().nodeData.nodeConfig.name ?? ""
   },
   set(value) {
     nodeNameRef.value = value
-    props.cell?.setData({ nodeConfig: { name: value } })
+    props.cell?.setData({ nodeData: { nodeConfig: { name: value } } })
     emit("changeNode", props.cell?.getData())
   },
 })

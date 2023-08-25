@@ -244,7 +244,7 @@ const node_html = {
     const data = node.getData() as AntvNodeData
 
     return `<div class="node ${data.errors ? "node-has-errors" : ""}">
-                <span class="">${data.nodeConfig.name ?? "Новый элемент"}</span>
+                <span class="">${data.nodeData.nodeConfig.name ?? "Новый элемент"}</span>
             </div>`
   },
   shouldComponentUpdate(node: AntvNode) {
@@ -259,7 +259,7 @@ export const antvMetadata = (nodeData?: JSONGraphNode) => {
     width: 180,
     height: 36,
     data: {
-      nodeConfig: Object.assign({}, nodeData?.nodeConfig),
+      nodeData: { nodeConfig: nodeData?.nodeConfig },
     },
     ports: default_node_ports(["in", "out"]),
   }

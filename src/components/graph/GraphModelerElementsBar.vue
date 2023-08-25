@@ -60,11 +60,11 @@ const startDrag = (e: MouseEvent) => {
   const target = e.currentTarget as HTMLElement
 
   const nodeData = props.graphData.nodes.find((item) => item.id === target.dataset.id)
-
+  
   const node = props.graph.createNode(antvMetadata(nodeData))
-
+  
   //   delete nodeData?.nodeConfig
-
+  
   node.setData({ is_stencil_node: true, nodeData })
 
   dnd.value?.start(node, e)

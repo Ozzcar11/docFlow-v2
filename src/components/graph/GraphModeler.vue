@@ -35,6 +35,7 @@ onMounted(() => {
   init_modeler()
 })
 
+//TODO засунуть nodeConfig в gd
 const graphData: Ref<JSONGraphData> = ref({
   nodes: [
     {
@@ -61,10 +62,10 @@ const graphData: Ref<JSONGraphData> = ref({
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
-      },
-      nodeConfig: {
-        name: "Первый шаг",
-        color: "#fff",
+        nodeConfig: {
+          name: "Первый шаг",
+          color: "#fff",
+        },
       },
     },
     {
@@ -87,10 +88,10 @@ const graphData: Ref<JSONGraphData> = ref({
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
-      },
-      nodeConfig: {
-        name: "Второй шаг",
-        color: "#fff",
+        nodeConfig: {
+          name: "Второй шаг",
+          color: "#fff",
+        },
       },
     },
     {
@@ -113,10 +114,10 @@ const graphData: Ref<JSONGraphData> = ref({
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
-      },
-      nodeConfig: {
-        name: "Третий шаг",
-        color: "#fff",
+        nodeConfig: {
+          name: "Третий шаг",
+          color: "#fff",
+        },
       },
     },
     {
@@ -139,10 +140,10 @@ const graphData: Ref<JSONGraphData> = ref({
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
-      },
-      nodeConfig: {
-        name: "Четвёртый шаг",
-        color: "#fff",
+        nodeConfig: {
+          name: "Четвёртый шаг",
+          color: "#fff",
+        },
       },
     },
     {
@@ -165,10 +166,10 @@ const graphData: Ref<JSONGraphData> = ref({
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
-      },
-      nodeConfig: {
-        name: "Пятый шаг",
-        color: "#fff",
+        nodeConfig: {
+          name: "Пятый шаг",
+          color: "#fff",
+        },
       },
     },
   ],
@@ -245,9 +246,9 @@ const init_modeler = () => {
 const changeNode = (val: Partial<Node> & Pick<Node, "id" | "appearance" | "gd">) => {
   graphData.value.nodes = graphData.value.nodes.map((item) => (item = item.id === val?.id ? val : item))
 
-//   const resValue = { ...val }
-//   resValue.nodeData.nodeConfig = val.nodeConfig
-//   graphData.value.nodes = graphData.value.nodes.map((item) => (item = item.id === val?.nodeData.id ? resValue.nodeData : item))
+  //   const resValue = { ...val }
+  //   resValue.nodeData.nodeConfig = val.nodeConfig
+  //   graphData.value.nodes = graphData.value.nodes.map((item) => (item = item.id === val?.nodeData.id ? resValue.nodeData : item))
 }
 </script>
 

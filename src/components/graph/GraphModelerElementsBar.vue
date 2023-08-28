@@ -2,7 +2,7 @@
   <div class="shape-holder">
     <div class="mb-7 text-lg font-medium">Этапы</div>
     <div v-for="node of graphData.nodes" :key="node.id" :data-id="node.id" class="node" @mousedown="startDrag($event)">
-      {{ node.nodeConfig?.name ?? "Новый элемент" }}
+      {{ node.gd.nodeConfig.name ?? "Новый элемент" }}
     </div>
     <div class="mt-auto"></div>
   </div>
@@ -60,11 +60,12 @@ const startDrag = (e: MouseEvent) => {
   const target = e.currentTarget as HTMLElement
 
   const nodeData = props.graphData.nodes.find((item) => item.id === target.dataset.id)
-  
+  console.log(nodeData)
+ // TODO засунуть gd в antv data
   const node = props.graph.createNode(antvMetadata(nodeData))
-  
+
   //   delete nodeData?.nodeConfig
-  
+
   node.setData({ is_stencil_node: true, nodeData })
 
   dnd.value?.start(node, e)

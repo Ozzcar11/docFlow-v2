@@ -17,7 +17,7 @@
       <component :is="configComponents[item.component as keyof typeof configComponents]" v-model="item.data"></component>
     </div>
     <div class="mt-4">
-      <BaseSelectComponent />
+      <BaseSelectComponent @addComponent="$emit('addComponent', $event)" />
     </div>
   </template>
   <!-- <div v-for="(item, index) in current_fields.configData" :key="index">
@@ -171,11 +171,12 @@ const users = [
 const nodeData: Ref<Node | null> = ref(null)
 
 watch(
-  () => props.cell?.getData().nodeData,
+  () => props.cell?.hasChanged(),
   (value) => {
-    nodeData.value = value ? value : null
+    console.log(value)
+
+    //  nodeData.value = value ? value : null
   },
-  { deep: true },
 )
 
 const nodeNameRef = ref("")

@@ -18,6 +18,7 @@ export interface NodeGraphData {
     data?: string | number
   }[]
 
+  nodeConfig: NodeConfig
   options?: string[]
 }
 
@@ -38,8 +39,6 @@ export interface Node {
     width: number
     height: number
   }
-
-  nodeConfig: NodeConfig
 }
 
 export const NodeDefault: Partial<Node> = {
@@ -62,10 +61,10 @@ export const NodeDefault: Partial<Node> = {
         data: "",
       },
     ],
-  },
-  nodeConfig: {
-    name: "Новый элемент",
-    color: "#fff",
+    nodeConfig: {
+      name: "Новый элемент",
+      color: "#fff",
+    },
   },
 }
 

@@ -11,7 +11,7 @@
         <div id="modeler-container" style="flex: 1"></div>
       </div>
       <div class="w-[25rem] flex-initial border-t border-gray-200 overflow-y-auto p-5">
-        <GraphModelerConfigBar :cell="selected_cell" @changeNode="changeNode"></GraphModelerConfigBar>
+        <GraphModelerConfigBar :cell="selected_cell"></GraphModelerConfigBar>
       </div>
     </div>
   </div>
@@ -243,13 +243,13 @@ const init_modeler = () => {
   }
 }
 
-const changeNode = (val: Partial<Node> & Pick<Node, "id" | "appearance" | "gd">) => {
-  graphData.value.nodes = graphData.value.nodes.map((item) => (item = item.id === val?.id ? val : item))
+// const changeNode = (val: Partial<Node> & Pick<Node, "id" | "appearance" | "gd">) => {
+//   graphData.value.nodes = graphData.value.nodes.map((item) => (item = item.id === val?.id ? val : item))
 
-  //   const resValue = { ...val }
-  //   resValue.nodeData.nodeConfig = val.nodeConfig
-  //   graphData.value.nodes = graphData.value.nodes.map((item) => (item = item.id === val?.nodeData.id ? resValue.nodeData : item))
-}
+//   //   const resValue = { ...val }
+//   //   resValue.nodeData.nodeConfig = val.nodeConfig
+//   //   graphData.value.nodes = graphData.value.nodes.map((item) => (item = item.id === val?.nodeData.id ? resValue.nodeData : item))
+// }
 </script>
 
 <style lang="scss">

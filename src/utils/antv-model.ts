@@ -242,7 +242,7 @@ export type AntvNodeData = {
 const node_html = {
   render(node: AntvNode) {
     const data = node.getData() as AntvNodeData
-   
+
     return `<div class="node ${data.errors ? "node-has-errors" : ""}">
                 <span class="">${data.nodeData.gd.nodeConfig.name ?? "Новый элемент"}</span>
             </div>`
@@ -259,7 +259,7 @@ export const antvMetadata = (nodeData?: JSONGraphNode) => {
     width: 180,
     height: 36,
     data: {
-      nodeData: { nodeConfig: nodeData?.gd.nodeConfig },
+      nodeData: { gd: nodeData?.gd },
     },
     ports: default_node_ports(["in", "out"]),
   }

@@ -60,8 +60,6 @@ const startDrag = (e: MouseEvent) => {
   const target = e.currentTarget as HTMLElement
 
   const nodeData = props.graphData.nodes.find((item) => item.id === target.dataset.id)
-  console.log(nodeData)
- // TODO засунуть gd в antv data
   const node = props.graph.createNode(antvMetadata(nodeData))
 
   //   delete nodeData?.nodeConfig

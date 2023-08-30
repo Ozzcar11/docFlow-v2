@@ -1,9 +1,9 @@
 <template>
-  <template v-if="nodeData === null">
+  <template v-if="nodeData === undefined">
     <span class="block text-center opacity-30 text-xl">Выберите элемент</span>
   </template>
   <template v-else>
-    <BaseInput twClass="text-xl" class="mb-5" placeholder="Название" v-model="nodeName" />
+    <BaseInput twClass="text-xl" class="mb-5" placeholder="Название" v-model="nodeData.gd.nodeConfig.name" />
     <div class="grid grid-cols-2 gap-y-2 my-5">
       <div class="text-sm text-gray-600 flex items-center">Проверяющий</div>
       <BaseSelect v-model="nodeData.gd.stageData.checkNames" :options="users" />
@@ -168,29 +168,35 @@ const users = [
   },
 ]
 
-const nodeData: Ref<Node | null> = ref(null)
+const nodeData: Ref<Node | undefined> = ref(undefined)
 
 watch(
-  () => props.cell?.hasChanged(),
+  () => props.cell?.getData().nodeData,
   (value) => {
-    console.log(value)
-
-    //  nodeData.value = value ? value : null
+    nodeData.value = value
   },
 )
 
-const nodeNameRef = ref("")
-const nodeName = computed({
-  get() {
-    nodeNameRef.value
-    return props.cell?.getData().nodeData.nodeConfig.name ?? ""
+watch(
+  nodeData,
+  (value) => {
+    if (value) props.cell?.setData({ nodeData: value })
   },
-  set(value) {
-    nodeNameRef.value = value
-    props.cell?.setData({ nodeData: { nodeConfig: { name: value } } })
-    emit("changeNode", props.cell?.getData())
-  },
-})
+  { deep: true },
+)
+
+// const nodeNameRef = ref("")
+// const nodeName = computed({
+//   get() {
+//     nodeNameRef.value
+//     return props.cell?.getData().nodeData.gd.nodeConfig.name ?? ""
+//   },
+//   set(value) {
+//     nodeNameRef.value = value
+//     props.cell?.setData({ nodeData: { gd: { nodeConfig: { name: value } } } })
+//     emit("changeNode", props.cell?.getData())
+//   },
+// })
 // const edge_content_ref = ref("");
 
 // const edge_content = computed({

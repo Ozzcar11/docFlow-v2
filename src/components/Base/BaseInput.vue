@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <div>
-    <el-input class="base-input" :class="twClass" :modelValue="modelValue" :placeholder="placeholder" @input="$emit('update:modelValue', $event)" />
+    <el-input class="base-input" :class="twClass" :modelValue="modelValue" :placeholder="placeholder ?? 'Введите текст'" @input="$emit('update:modelValue', $event)" />
   </div>
 </template>
 

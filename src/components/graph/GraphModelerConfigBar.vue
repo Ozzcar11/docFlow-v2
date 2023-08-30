@@ -17,7 +17,7 @@
       <component :is="configComponents[item.component as keyof typeof configComponents]" v-model="item.data"></component>
     </div>
     <div class="mt-4">
-      <BaseSelectComponent @addComponent="$emit('addComponent', $event)" />
+      <BaseSelectComponent @addComponent="addComponent" />
     </div>
   </template>
   <!-- <div v-for="(item, index) in current_fields.configData" :key="index">
@@ -184,6 +184,13 @@ watch(
   },
   { deep: true },
 )
+
+const addComponent = (component: string) => {
+  nodeData.value?.gd.configData.push({
+    component,
+    data: "",
+  })
+}
 
 // const nodeNameRef = ref("")
 // const nodeName = computed({

@@ -19,7 +19,7 @@ const options: selectOptions[] = [
   },
   {
     icon: "input",
-    value: "1",
+    value: "BaseInput",
     label: "Поле для ввода",
   },
   {

@@ -47,10 +47,6 @@ const init_dnd = (graph: Graph) => {
     target: graph,
     scaled: false,
     animation: true,
-    validateNode(droppingNode) {
-      droppingNode.updateData({ is_stencil_node: undefined })
-      return true
-    },
   })
 }
 
@@ -62,9 +58,7 @@ const startDrag = (e: MouseEvent) => {
   const nodeData = props.graphData.nodes.find((item) => item.id === target.dataset.id)
   const node = props.graph.createNode(antvMetadata(nodeData))
 
-  //   delete nodeData?.nodeConfig
-
-  node.setData({ is_stencil_node: true, nodeData })
+  node.setData({ nodeData })
 
   dnd.value?.start(node, e)
 }

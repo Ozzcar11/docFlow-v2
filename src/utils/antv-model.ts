@@ -227,7 +227,6 @@ export function default_node_ports(ports: Array<keyof typeof default_port_groups
 
 export type AntvNodeData = {
   errors?: boolean
-  is_stencil_node?: boolean
   nodeData: Node
   nodeConfig: NodeConfig
 }

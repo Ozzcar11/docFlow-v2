@@ -1,8 +1,8 @@
 <template>
   <div class="shape-holder">
     <div class="mb-7 text-lg font-medium">Этапы</div>
-    <div v-for="node of graphData.nodes" :key="node.id" :data-id="node.id" class="node" @mousedown="startDrag($event)">
-      {{ node.gd.nodeConfig.name ?? "Новый элемент" }}
+    <div v-for="node of graphNodes" :key="node.id" :data-id="node.id" class="node" @mousedown="startDrag($event)">
+      {{ node.getData().nodeData.gd.nodeConfig.name ?? "Новый элемент" }}
     </div>
     <div class="mt-auto"></div>
   </div>
@@ -17,16 +17,15 @@
 </template>
 
 <script lang="ts" setup>
-import { Addon, Graph } from "@antv/x6"
+import { Addon, Graph, Node as AntvNode } from "@antv/x6"
 import { Dnd } from "@antv/x6/lib/addon/dnd"
 
 import { onMounted, Ref, ref, watch } from "vue"
 import { antvMetadata } from "@/utils/antv-model"
-import { JSONGraphData } from "@/utils/transformer/json"
 
 const props = defineProps<{
   graph: Graph | undefined
-  graphData: JSONGraphData
+  graphNodes: AntvNode[]
 }>()
 
 const dnd: Ref<Dnd | undefined> = ref()
@@ -55,12 +54,9 @@ const startDrag = (e: MouseEvent) => {
 
   const target = e.currentTarget as HTMLElement
 
-  const nodeData = props.graphData.nodes.find((item) => item.id === target.dataset.id)
-  const node = props.graph.createNode(antvMetadata(nodeData))
+  const node = props.graphNodes.find((item) => item.id === target.dataset.id)
 
-  node.setData({ nodeData })
-
-  dnd.value?.start(node, e)
+  dnd.value?.start(node!, e)
 }
 </script>
 

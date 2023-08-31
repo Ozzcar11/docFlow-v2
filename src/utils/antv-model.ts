@@ -263,3 +263,7 @@ export const antvMetadata = (nodeData?: JSONGraphNode) => {
     ports: default_node_ports(["in", "out"]),
   }
 }
+
+export const antvNodesGenerator = (nodes: JSONGraphNode[], graph: Graph): AntvNode[] => {
+  return nodes.map((item) => graph?.createNode(antvMetadata(item)))
+}

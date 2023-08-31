@@ -5,7 +5,7 @@
     </div> -->
     <div class="w-full h-screen flex">
       <div class="w-[25rem] flex-initial border-gray-300 border-r relative">
-        <GraphModelerElementsBar v-if="graph !== null" :graph="graph" :graphData="graphData"></GraphModelerElementsBar>
+        <GraphModelerElementsBar v-if="graph !== null" :graph="graph" :graphNodes="graphNodes"></GraphModelerElementsBar>
       </div>
       <div id="modeler-container-box" class="w-auto flex flex-grow border-b-0 border-gray-300/90" style="border-width: 3px">
         <div id="modeler-container" style="flex: 1"></div>
@@ -18,9 +18,9 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, Ref, ref } from "vue"
+import { onMounted, Ref, ref, watch } from "vue"
 
-import { Cell, Graph } from "@antv/x6"
+import { Cell, Graph, Node as AntvNode } from "@antv/x6"
 
 import { Node } from "@/utils/graph"
 
@@ -29,13 +29,12 @@ import GraphModelerElementsBar from "./GraphModelerElementsBar.vue"
 
 import { JSONGraphData } from "@/utils/transformer/json"
 
-import { graph_options_defaults, graph_register_defaults } from "@/utils/antv-model"
+import { graph_options_defaults, graph_register_defaults, antvNodesGenerator } from "@/utils/antv-model"
 
 onMounted(() => {
   init_modeler()
 })
 
-//TODO засунуть nodeConfig в gd
 const graphData: Ref<JSONGraphData> = ref({
   nodes: [
     {
@@ -209,6 +208,8 @@ const graphData: Ref<JSONGraphData> = ref({
   ],
 })
 
+const graphNodes: Ref<AntvNode[]> = ref([])
+
 const graph: Ref<Graph | undefined> = ref()
 
 const selected_cell: Ref<Cell | undefined> = ref()
@@ -240,6 +241,7 @@ const init_modeler = () => {
   if (graph.value != undefined) {
     graph_register_defaults(graph.value)
     register_events(graph.value)
+    graphNodes.value = antvNodesGenerator(graphData.value.nodes, graph.value)
   }
 }
 

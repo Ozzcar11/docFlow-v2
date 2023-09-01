@@ -4,6 +4,7 @@
     <div v-for="node of graphNodes" :key="node.id" :data-id="node.id" class="node" @mousedown="startDrag($event)">
       {{ node.getData().nodeData.gd.nodeConfig.name ?? "Новый элемент" }}
     </div>
+    <!-- <div ref="stencilContainer" class="stencil-container"></div> -->
     <div class="mt-auto"></div>
   </div>
   <div class="absolute bottom-0 w-full h-28 px-10 py-8 border-t bg-white">
@@ -19,6 +20,7 @@
 <script lang="ts" setup>
 import { Addon, Graph, Node as AntvNode } from "@antv/x6"
 import { Dnd } from "@antv/x6/lib/addon/dnd"
+import { Stencil } from "@antv/x6/lib/addon/stencil"
 
 import { onMounted, Ref, ref, watch } from "vue"
 import { antvMetadata } from "@/utils/antv-model"
@@ -29,6 +31,8 @@ const props = defineProps<{
 }>()
 
 const dnd: Ref<Dnd | undefined> = ref()
+const stencil: Ref<Stencil | undefined> = ref()
+const stencilContainer: Ref<HTMLDivElement | undefined> = ref()
 
 onMounted(() => {
   // console.log(dnd.value);
@@ -37,11 +41,25 @@ onMounted(() => {
 watch(
   () => props.graph,
   (value: typeof props.graph) => {
-    if (typeof value !== "undefined") init_dnd(value)
+    if (typeof value !== "undefined") {
+      initDnd(value)
+      // initStencil(value)
+    }
   },
 )
 
-const init_dnd = (graph: Graph) => {
+// const initStencil = (graph: Graph) => {
+//   stencil.value = new Addon.Stencil({
+//     title: "Этапы",
+//     target: graph,
+//     stencilGraphWidth: 400,
+//     stencilGraphHeight: 800,
+//   })
+//   stencilContainer.value?.appendChild(stencil.value.container)
+//   stencil.value.load(props.graphNodes)
+// }
+
+const initDnd = (graph: Graph) => {
   dnd.value = new Addon.Dnd({
     target: graph,
     scaled: false,

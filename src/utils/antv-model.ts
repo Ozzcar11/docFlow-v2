@@ -1,9 +1,11 @@
 import { Graph, Node as AntvNode, Path } from "@antv/x6"
 import { Options } from "@antv/x6/lib/graph/options"
+import { uuid } from "@/utils/data/uuid"
+
 import { NodeConfig } from "./graph"
+import { Node } from "./graph"
 
 import { JSONGraphNode } from "./transformer/json"
-import { Node } from "./graph"
 
 export const default_edge_label = (text: string | null = "") => {
   if (text == null) return null
@@ -266,4 +268,31 @@ export const antvMetadata = (nodeData?: JSONGraphNode) => {
 
 export const antvNodesGenerator = (nodes: JSONGraphNode[], graph: Graph): AntvNode[] => {
   return nodes.map((item) => graph?.createNode(antvMetadata(item)))
+}
+
+export const createEmptyNode = (graph: Graph): AntvNode => {
+  const emptyNode = {
+    id: uuid(),
+    appearance: {
+      x: 0,
+      y: 0,
+      width: 180,
+      height: 36,
+    },
+    gd: {
+      stageData: {
+        checkNames: [],
+        responsibleNames: [],
+        watchersNames: [],
+      },
+      configData: [],
+      nodeConfig: {
+        name: "Новый элемент",
+        color: "#fff",
+      },
+      isConfigurable: true,
+    },
+  }
+
+  return graph?.createNode(antvMetadata(emptyNode))
 }

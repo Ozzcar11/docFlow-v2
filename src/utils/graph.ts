@@ -19,7 +19,8 @@ export interface NodeGraphData {
   }[]
 
   nodeConfig: NodeConfig
-  options?: string[]
+
+  isConfigurable?: boolean
 }
 
 export interface NodeConfig {

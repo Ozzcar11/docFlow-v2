@@ -1,8 +1,12 @@
 <template>
   <template v-if="nodeData === undefined">
-    <span class="block text-center opacity-30 text-xl">Выберите элемент</span>
+    <span class="block text-center opacity-30 text-xl mt-14">Выберите или создайте этап</span>
   </template>
   <template v-else>
+    <div v-if="nodeData.gd.isConfigurable" class="mb-4 flex justify-end">
+      <el-button class="config-buttons text-gray-600" @click="hideConfigBar">Отмена</el-button>
+      <el-button class="config-buttons text-white bg-blue-700" @click="saveNode">Сохранить</el-button>
+    </div>
     <BaseInput twClass="text-xl" class="mb-5" placeholder="Название" v-model="nodeData.gd.nodeConfig.name" />
     <div class="grid grid-cols-2 gap-y-2 my-5">
       <div class="text-sm text-gray-600 flex items-center">Проверяющий</div>
@@ -20,113 +24,10 @@
       <BaseSelectComponent @addComponent="addComponent" />
     </div>
   </template>
-  <!-- <div v-for="(item, index) in current_fields.configData" :key="index">
-     <component :is="item.component"></component>
-   </div> -->
-
-  <!--  <div v-else-if="cell.isNode()" class="w-full p-3">
-    <div class="">
-      <span
-        class="mb-2 text-ellipsis overflow-hidden font-mono block text-xl border-b border-gray-300"
-        >{{
-          (cell.getData() as AntvNodeData).gd ??
-          `${typeToRu((cell.getData() as AntvNodeData).gd.component)}_${cell.id
-            .toString()
-            .substring(0, 8)}`
-        }}</span
-      >
-
-      <div class="w-full">
-        <button @click="cell?.remove()" class="btn btn-red">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            />
-          </svg>
-        </button>
-      </div>
-      <div v-for="(fields, field_group) in current_fields" :key="field_group">
-        <div class="my-2">
-          {{ fields }}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div v-else-if="cell.isEdge()" class="w-full p-2">
-    <div class="">
-      <span class="mb-2 font-bold block text-2xl border-b border-gray-300"
-        >Линия</span
-      >
-
-      <div>
-        <button @click="cell?.remove()" class="btn btn-red">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            />
-          </svg>
-        </button>
-      </div>
-
-      <div
-        class="my-2"
-        v-if="
-          //  (cell.getSourceCell()?.getData() as AntvNodeData).gd.type ==
-          //  'decision'
-          false
-        "
-      >
-        <span
-          class="my-2 block border-b border-gray-300 uppercase font-bold text-sm text-gray-800"
-          >Основные</span
-        >
-
-        <div class="block mt-2">
-          <label>
-            <span class="text-gray-700 block mb-1">Label</span>
-            <input
-              type="text"
-              class="style-soft w-full"
-              v-model="edge_content"
-            />
-          </label>
-          <div class="w-full my-2 text-right">
-            <button class="inline btn mr-2" @click="edge_content = 'Yes'">
-              Да
-            </button>
-            <button class="inline btn" @click="edge_content = 'No'">Нет</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div v-else>
-    <span>Выбран неверный элемент</span>
-  </div> -->
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed } from "vue"
+import { ref, watch } from "vue"
 import type { Ref } from "vue"
 
 import type { Node } from "@/utils/graph"
@@ -143,7 +44,7 @@ const props = defineProps<{
   cell: Cell | undefined
 }>()
 
-const emit = defineEmits(["changeNode"])
+const emit = defineEmits(["saveNode"])
 
 const users = [
   {
@@ -192,6 +93,16 @@ const addComponent = (component: string) => {
   })
 }
 
+const hideConfigBar = () => {
+  nodeData.value = undefined
+}
+
+const saveNode = () => {
+  props.cell?.setData({ nodeData: { gd: { isConfigurable: false } } })
+  emit("saveNode", props.cell)
+  hideConfigBar()
+}
+
 // const nodeNameRef = ref("")
 // const nodeName = computed({
 //   get() {
@@ -230,5 +141,9 @@ const addComponent = (component: string) => {
 <style lang="scss" scoped>
 input {
   @apply border border-gray-200;
+}
+
+.config-buttons {
+  @apply text-xs font-medium p-2.5 rounded-lg;
 }
 </style>

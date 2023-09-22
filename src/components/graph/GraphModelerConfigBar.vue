@@ -3,9 +3,12 @@
     <span class="block text-center opacity-30 text-xl mt-14">Выберите или создайте этап</span>
   </template>
   <template v-else>
-    <div v-if="nodeData.gd.isConfigurable" class="mb-4 flex justify-end">
-      <el-button class="config-buttons text-gray-600" @click="hideConfigBar">Отмена</el-button>
-      <el-button class="config-buttons text-white bg-blue-700" @click="saveNode">Сохранить</el-button>
+    <div v-if="nodeData.gd.isConfigurable" class="mb-4 flex justify-between">
+      <el-button class="config-buttons text-gray-600" @click="deleteNode" type="danger" plain>Удалить</el-button>
+      <div>
+        <el-button class="config-buttons text-gray-600" @click="hideConfigBar">Отмена</el-button>
+        <el-button class="config-buttons text-white bg-blue-700" @click="saveNode">Сохранить</el-button>
+      </div>
     </div>
     <BaseInput twClass="text-xl" class="mb-5" placeholder="Название" v-model="nodeData.gd.nodeConfig.name" />
     <div class="grid grid-cols-2 gap-y-2 my-5">
@@ -44,7 +47,7 @@ const props = defineProps<{
   cell: Cell | undefined
 }>()
 
-const emit = defineEmits(["saveNode"])
+const emits = defineEmits(["saveNode", "hideConfig", "deleteNode"])
 
 const users = [
   {
@@ -94,12 +97,17 @@ const addComponent = (component: string) => {
 }
 
 const hideConfigBar = () => {
-  nodeData.value = undefined
+  emits("hideConfig")
 }
 
 const saveNode = () => {
   props.cell?.setData({ nodeData: { gd: { isConfigurable: false } } })
-  emit("saveNode", props.cell)
+  emits("saveNode", props.cell)
+  hideConfigBar()
+}
+
+const deleteNode = () => {
+  emits("deleteNode", props.cell)
   hideConfigBar()
 }
 

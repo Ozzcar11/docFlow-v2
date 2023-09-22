@@ -1,24 +1,22 @@
 <template>
   <div class="overflow-hidden h-screen rounded-lg border border-slate-900/20 hover:shadow-sm hover:border-slate-900/30 transition ease-in-out">
-    <!-- <div class="w-full bg-gray-100">
-      <GraphModelerToolbar :graph="graph" :initModeler="initModeler" />
-    </div> -->
+    <div class="w-full bg-gray-100"></div>
     <div class="w-full h-screen flex">
       <div class="w-[25rem] flex-initial border-gray-300 border-r relative">
-        <GraphModelerElementsBar v-if="graph !== null" :graph="graph" :graphNodes="graphNodes" @createStage="createStage" @editStage="editStage" :refreshComponent="refreshComponent" />
+        <GraphModelerElementsBar v-if="graph !== null" :graph="graph" :graphNodes="graphNodes" :refreshComponent="refreshComponent" @createStage="createStage" @editStage="editStage" />
       </div>
       <div id="modeler-container-box" class="w-auto flex flex-grow border-b-0 border-gray-300/90" style="border-width: 3px">
         <div id="modeler-container" style="flex: 1"></div>
       </div>
       <div class="w-[25rem] flex-initial border-t border-gray-200 overflow-y-auto p-5">
-        <GraphModelerConfigBar :cell="selected_cell" @saveNode="saveNode"></GraphModelerConfigBar>
+        <GraphModelerConfigBar :cell="selected_cell" @saveNode="saveNode" @hideConfig="hideConfig" @deleteNode="deleteNode"></GraphModelerConfigBar>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, Ref, ref, getCurrentInstance } from "vue"
+import { onMounted, Ref, ref } from "vue"
 
 import { Cell, Graph, Node as AntvNode } from "@antv/x6"
 
@@ -31,8 +29,13 @@ import { JSONGraphData } from "@/utils/transformer/json"
 
 import { graph_options_defaults, graph_register_defaults, antvNodesGenerator, createEmptyNode } from "@/utils/antv-model"
 
-onMounted(() => {
+import { ConfigAPI } from "@/api/config"
+
+onMounted(async () => {
   initModeler()
+
+  const res = await ConfigAPI.getNodes()
+  console.log(res.data)
 })
 
 const graphData: Ref<JSONGraphData> = ref({
@@ -246,6 +249,8 @@ const initModeler = () => {
 }
 
 const createStage = () => {
+   console.log(graphData.value);
+   
   if (graph.value != undefined) {
     selected_cell.value = createEmptyNode(graph.value)
   }
@@ -260,15 +265,39 @@ const editStage = (cell: AntvNode) => {
 
 const refreshComponent: Ref<boolean> = ref(false)
 
-const saveNode = (node: AntvNode) => {
+const saveNode = async (node: AntvNode) => {
   const nodeIndex = graphNodes.value.findIndex((item) => JSON.stringify(item) === JSON.stringify(node))
-
   if (nodeIndex !== -1) {
     graphNodes.value.splice(nodeIndex, 1, node)
     refreshComponent.value = !refreshComponent.value
   } else {
+   //  await ConfigAPI.createNode({
+   //    name: node.getData().nodeData.gd.nodeConfig.name,
+   //    schema: {
+
+   //    },
+   //    example_metadata: {
+   //      id: node.id,
+   //      appearance: {
+   //        x: node.position().x,
+   //        y: node.position().y,
+   //        width: 180,
+   //        height: 36,
+   //      },
+   //      gd: node.getData().nodeData.gd,
+   //    },
+   //  })   
     graphNodes.value.push(node)
   }
+}
+
+const hideConfig = () => {
+  selected_cell.value = undefined
+}
+
+const deleteNode = (node: AntvNode) => {
+  const nodeIndex = graphNodes.value.findIndex((item) => JSON.stringify(item) === JSON.stringify(node))
+  if (nodeIndex !== -1) graphNodes.value.splice(nodeIndex, 1)
 }
 
 // const changeNode = (val: Partial<Node> & Pick<Node, "id" | "appearance" | "gd">) => {

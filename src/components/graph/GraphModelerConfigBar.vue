@@ -30,24 +30,32 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue"
+import { ref, watch, onMounted } from "vue"
 import type { Ref } from "vue"
 
 import type { Node } from "@/utils/graph"
-
-import { Cell } from "@antv/x6"
 
 import { configComponents } from "@/utils/config-components"
 
 import BaseInput from "../Base/BaseInput.vue"
 import BaseSelect from "../Base/BaseSelect.vue"
 import BaseSelectComponent from "../Base/BaseSelectComponent.vue"
+import { ConfigAPI } from "@/api/config"
 
 const props = defineProps<{
-  cell: Cell | undefined
+  cell: any
 }>()
 
-const emits = defineEmits(["saveNode", "hideConfig", "deleteNode"])
+const nodeData = ref()
+
+watch(
+  () => props.cell,
+  (value) => {
+    nodeData.value = value
+  },
+)
+
+const emits = defineEmits(["saveNode", "hideConfig", "deleteNode", "refreshElemetsBar"])
 
 const users = [
   {
@@ -72,23 +80,6 @@ const users = [
   },
 ]
 
-const nodeData: Ref<Node | undefined> = ref(undefined)
-
-watch(
-  () => props.cell?.getData().nodeData,
-  (value) => {
-    nodeData.value = value
-  },
-)
-
-watch(
-  nodeData,
-  (value) => {
-    if (value) props.cell?.setData({ nodeData: value })
-  },
-  { deep: true },
-)
-
 const addComponent = (component: string) => {
   nodeData.value?.gd.configData.push({
     component,
@@ -100,9 +91,18 @@ const hideConfigBar = () => {
   emits("hideConfig")
 }
 
-const saveNode = () => {
-  props.cell?.setData({ nodeData: { gd: { isConfigurable: false } } })
-  emits("saveNode", props.cell)
+const saveNode = async () => {
+  if (nodeData.value.gd.isNew) {
+    const res = await ConfigAPI.createNode({
+      name: nodeData.value.gd.nodeConfig.name,
+      schema: nodeData.value.gd.configData,
+    })
+    emits("refreshElemetsBar")
+    return
+  }
+
+  console.log(nodeData.value)
+
   hideConfigBar()
 }
 

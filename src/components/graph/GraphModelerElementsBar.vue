@@ -3,7 +3,7 @@
     <div class="mb-7 text-lg font-medium">Этапы</div>
     <template v-if="renderComponent">
       <div v-for="node of graphNodes" :key="node.id" :data-id="node.id" class="node" @mousedown="startDrag($event)">
-        {{ node.data.nodeData.gd.nodeConfig.name ?? "Новый элемент" }}
+        {{ node.name ?? "Новый элемент" }}
         <button class="absolute right-4" id="edit">
           <EditIcon class="pointer-events-none" />
         </button>
@@ -30,11 +30,12 @@ import { Dnd } from "@antv/x6/lib/addon/dnd"
 // import { Stencil } from "@antv/x6/lib/addon/stencil"
 
 import { onMounted, Ref, ref, watch, nextTick } from "vue"
-// import { antvMetadata } from "@/utils/antv-model"
+import { antvMetadata } from "@/utils/antv-model"
+import { ConfigAPI } from "@/api/config"
 
 const props = defineProps<{
   graph: Graph | undefined
-  graphNodes: AntvNode[]
+  graphNodes: any
   refreshComponent: boolean
 }>()
 
@@ -53,7 +54,6 @@ watch(
   (value: typeof props.graph) => {
     if (typeof value !== "undefined") {
       initDnd(value)
-      // initStencil(value)
     }
   },
 )
@@ -86,11 +86,34 @@ const forceRender = async () => {
 //   stencil.value.load(props.graphNodes)
 // }
 
+let pageX = 0
+let pageY = 0
+
+document.addEventListener("mousemove", (e) => {
+  pageX = e.pageX
+  pageY = e.pageY
+})
+
 const initDnd = (graph: Graph) => {
   dnd.value = new Addon.Dnd({
     target: graph,
     scaled: false,
     animation: true,
+    getDropNode(draggingNode, options) {
+      const cloneNode = draggingNode.clone()
+      const placement = graph.pageToLocal(pageX, pageY)
+
+      const res = ConfigAPI.saveNode({
+        templates_schema: draggingNode.getData().id,
+        name: draggingNode.getData().name,
+        project_id: 1,
+        placement,
+      })
+
+      cloneNode.data.promise = res
+
+      return cloneNode
+    },
   })
 }
 
@@ -99,12 +122,16 @@ const startDrag = (e: MouseEvent) => {
 
   const target = e.currentTarget as HTMLElement
 
-  const node = props.graphNodes.find((item) => item.id === target.dataset.id)
+  const node = props.graphNodes.find((item) => item.id == target.dataset.id)
+
+  const dragbleNode = props.graph.createNode(antvMetadata(node))
+
+  console.log(props.graph.toJSON())
 
   if ((e.target as HTMLElement).id === "edit") {
     emit("editStage", node)
   } else {
-    dnd.value?.start(node!, e)
+    dnd.value?.start(dragbleNode!, e)
   }
 }
 </script>

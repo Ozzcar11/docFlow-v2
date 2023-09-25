@@ -29,8 +29,8 @@ export class AntvisTransformer implements ITransformer {
         appearance: {
           x: loc_node.getPosition().x ?? 0,
           y: loc_node.getPosition().y ?? 0,
-          width: loc_node.getSize().width ?? antvMetadata().width,
-          height: loc_node.getSize().height ?? antvMetadata().height,
+          width: loc_node.getSize().width,
+          height: loc_node.getSize().height,
           //   height: loc_node.getSize().height
           //       ?? node_types[loc_node_data.gd.type].antv_metadata.height,
         },
@@ -79,7 +79,6 @@ export class AntvisTransformer implements ITransformer {
     Object.values(graph.nodes).forEach((node) => {
       let node_ser = {
         // default values (includes ports etc); can be overwritten after spread
-        ...antvMetadata(),
         //  ...node_types[node.gd.type].antv_metadata,
 
         // id: `node-${node.id}`,
@@ -97,7 +96,7 @@ export class AntvisTransformer implements ITransformer {
       node_ser = Object.assign(
         {},
         //  node_types[node.gd.type].antv_metadata ?? node_types.notice.antv_metadata ?? {},
-        antvMetadata() ?? {},
+      {},
         node_ser,
       );
 

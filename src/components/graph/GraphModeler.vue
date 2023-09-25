@@ -9,7 +9,7 @@
         <div id="modeler-container" style="flex: 1"></div>
       </div>
       <div class="w-[25rem] flex-initial border-t border-gray-200 overflow-y-auto p-5">
-        <GraphModelerConfigBar :cell="selected_cell" @saveNode="saveNode" @hideConfig="hideConfig" @deleteNode="deleteNode"></GraphModelerConfigBar>
+        <GraphModelerConfigBar :cell="selected_cell" @saveNode="saveNode" @hideConfig="hideConfig" @deleteNode="deleteNode" @refresh-elemets-bar="renderAllNodes"></GraphModelerConfigBar>
       </div>
     </div>
   </div>
@@ -30,12 +30,11 @@ import { JSONGraphData } from "@/utils/transformer/json"
 import { graph_options_defaults, graph_register_defaults, antvNodesGenerator, createEmptyNode } from "@/utils/antv-model"
 
 import { ConfigAPI } from "@/api/config"
+import { uuid } from "@/utils/data/uuid"
 
 onMounted(async () => {
+  renderAllNodes()
   initModeler()
-
-  const res = await ConfigAPI.getNodes()
-  console.log(res.data)
 })
 
 const graphData: Ref<JSONGraphData> = ref({
@@ -56,11 +55,11 @@ const graphData: Ref<JSONGraphData> = ref({
         },
         configData: [
           {
-            component: "BaseInput",
+            type: "BaseInput",
             data: "Lorem ipsum dolor sit amet.",
           },
           {
-            component: "BaseInput",
+            type: "BaseInput",
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
@@ -86,7 +85,7 @@ const graphData: Ref<JSONGraphData> = ref({
         },
         configData: [
           {
-            component: "BaseInput",
+            type: "BaseInput",
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
@@ -112,7 +111,7 @@ const graphData: Ref<JSONGraphData> = ref({
         },
         configData: [
           {
-            component: "BaseInput",
+            type: "BaseInput",
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
@@ -138,7 +137,7 @@ const graphData: Ref<JSONGraphData> = ref({
         },
         configData: [
           {
-            component: "BaseInput",
+            type: "BaseInput",
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
@@ -164,7 +163,7 @@ const graphData: Ref<JSONGraphData> = ref({
         },
         configData: [
           {
-            component: "BaseInput",
+            type: "BaseInput",
             data: "Lorem ipsum dolor sit amet.",
           },
         ],
@@ -211,15 +210,34 @@ const graphData: Ref<JSONGraphData> = ref({
   ],
 })
 
-const graphNodes: Ref<AntvNode[]> = ref([])
+const graphNodes = ref([])
 
 const graph: Ref<Graph | undefined> = ref()
 
-const selected_cell: Ref<Cell | undefined> = ref()
+const selected_cell = ref()
 
 const registerEvents = (graph: Graph) => {
-  graph.on("cell:selected", ({ cell, options }) => {
-    if (selected_cell.value != cell) selected_cell.value = cell
+  graph.on("cell:selected", async ({ cell, options }) => {
+    const res = await cell.data.promise
+
+    const secondRes = await ConfigAPI.getNode(res.data.id)
+
+    selected_cell.value = {
+      id: cell.data.id,
+      gd: {
+        stageData: {
+          checkNames: [],
+          responsibleNames: [],
+          watchersNames: [],
+        },
+        configData: secondRes.data.fields,
+        nodeConfig: {
+          name: cell.data.name,
+          color: "#fff",
+        },
+        isConfigurable: true,
+      },
+    }
   })
 
   graph.on("cell:unselected", ({ cell, options }) => {
@@ -231,7 +249,7 @@ const registerEvents = (graph: Graph) => {
   })
 }
 
-const initModeler = () => {
+const initModeler = async () => {
   const container = document.getElementById("modeler-container")!
 
   graph.value = new Graph({
@@ -244,23 +262,77 @@ const initModeler = () => {
   if (graph.value != undefined) {
     graph_register_defaults(graph.value)
     registerEvents(graph.value)
-    graphNodes.value = antvNodesGenerator(graphData.value.nodes, graph.value)
+
+    const res = await ConfigAPI.getProject()
+    let cells = []
+    cells = res.data.steps.forEach((item) => {
+      // graph.value.add_node({
+      //   id: item.id,
+      //   gd: item.nodeData.gd,
+      //   appearance: {
+      //     x: item.placement.x ?? 0,
+      //     y: item.placement.y.y ?? 0,
+      //     width: 180,
+      //     height: 36,
+      //     //   height: loc_node.getSize().height
+      //     //       ?? node_types[loc_node_data.gd.type].antv_metadata.height,
+      //   },
+      // })
+    })
   }
 }
 
 const createStage = () => {
-   console.log(graphData.value);
-   
-  if (graph.value != undefined) {
-    selected_cell.value = createEmptyNode(graph.value)
+  selected_cell.value = {
+    id: uuid(),
+    appearance: {
+      x: 0,
+      y: 0,
+    },
+    gd: {
+      stageData: {
+        checkNames: [],
+        responsibleNames: [],
+        watchersNames: [],
+      },
+      configData: [],
+      nodeConfig: {
+        name: "",
+        color: "#fff",
+      },
+      isConfigurable: true,
+    },
   }
 }
 
-const editStage = (cell: AntvNode) => {
-  if (graph.value != undefined) {
-    cell.setData({ nodeData: { gd: { isConfigurable: true } } })
-    selected_cell.value = cell
+const editStage = (cell: any) => {
+  selected_cell.value = {
+    id: cell.id,
+    appearance: {
+      x: 0,
+      y: 0,
+    },
+    gd: {
+      stageData: {
+        checkNames: [],
+        responsibleNames: [],
+        watchersNames: [],
+      },
+      configData: cell.schema,
+      nodeConfig: {
+        name: cell.name,
+        color: "#fff",
+      },
+      isConfigurable: true,
+      isNew: true,
+    },
   }
+}
+
+const renderAllNodes = async () => {
+  const res = await ConfigAPI.getNodes()
+  graphNodes.value = []
+  graphNodes.value = res.data
 }
 
 const refreshComponent: Ref<boolean> = ref(false)
@@ -271,22 +343,22 @@ const saveNode = async (node: AntvNode) => {
     graphNodes.value.splice(nodeIndex, 1, node)
     refreshComponent.value = !refreshComponent.value
   } else {
-   //  await ConfigAPI.createNode({
-   //    name: node.getData().nodeData.gd.nodeConfig.name,
-   //    schema: {
+    //  await ConfigAPI.createNode({
+    //    name: node.getData().nodeData.gd.nodeConfig.name,
+    //    schema: {
 
-   //    },
-   //    example_metadata: {
-   //      id: node.id,
-   //      appearance: {
-   //        x: node.position().x,
-   //        y: node.position().y,
-   //        width: 180,
-   //        height: 36,
-   //      },
-   //      gd: node.getData().nodeData.gd,
-   //    },
-   //  })   
+    //    },
+    //    example_metadata: {
+    //      id: node.id,
+    //      appearance: {
+    //        x: node.position().x,
+    //        y: node.position().y,
+    //        width: 180,
+    //        height: 36,
+    //      },
+    //      gd: node.getData().nodeData.gd,
+    //    },
+    //  })
     graphNodes.value.push(node)
   }
 }

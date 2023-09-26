@@ -32,6 +32,7 @@ import { Dnd } from "@antv/x6/lib/addon/dnd"
 import { onMounted, Ref, ref, watch, nextTick } from "vue"
 import { antvMetadata } from "@/utils/antv-model"
 import { ConfigAPI } from "@/api/config"
+import { clone } from "@antv/x6/lib/util/object/object"
 
 const props = defineProps<{
   graph: Graph | undefined
@@ -101,13 +102,14 @@ const initDnd = (graph: Graph) => {
     animation: true,
     getDropNode(draggingNode, options) {
       const cloneNode = draggingNode.clone()
-      const placement = graph.pageToLocal(pageX, pageY)
+      const placement = graph.pageToLocal(pageX - 100, pageY - 15)
 
       const res = ConfigAPI.saveNode({
         templates_schema: draggingNode.getData().id,
         name: draggingNode.getData().name,
         project_id: 1,
         placement,
+        noda_front: cloneNode.id,
       })
 
       cloneNode.data.promise = res
@@ -125,8 +127,6 @@ const startDrag = (e: MouseEvent) => {
   const node = props.graphNodes.find((item) => item.id == target.dataset.id)
 
   const dragbleNode = props.graph.createNode(antvMetadata(node))
-
-  console.log(props.graph.toJSON())
 
   if ((e.target as HTMLElement).id === "edit") {
     emit("editStage", node)

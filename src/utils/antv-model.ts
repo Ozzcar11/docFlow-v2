@@ -6,6 +6,7 @@ import { NodeConfig } from "./graph"
 import { Node } from "./graph"
 
 import { JSONGraphNode } from "./transformer/json"
+import { ConfigAPI } from "@/api/config"
 
 export const default_edge_label = (text: string | null = "") => {
   if (text == null) return null
@@ -144,6 +145,38 @@ export function graph_register_defaults(graph: Graph) {
     }, 1000)
   })
 
+  graph.on("edge:removed", async ({ edge }) => {
+    if (typeof edge.id === "string") {
+      await ConfigAPI.deleteLink(edge.getData().id)
+    } else {
+      await ConfigAPI.deleteNode(edge.id)
+    }
+  })
+
+  graph.on("node:removed", async ({ cell }) => {
+    if (typeof cell.id === "string") {
+      const res = await cell.getData().promise
+      ConfigAPI.deleteNode(res.data.id)
+    } else {
+      const res = await ConfigAPI.deleteNode(cell.getData().id)
+    }
+  })
+
+  graph.on("node:moved", async ({ cell }) => {
+    if (typeof cell.id === "string") {
+      const res = await cell.getData().promise
+      await ConfigAPI.newPlacement(res.data.id, {
+        new_placement: cell.getPosition(),
+      })
+    } else {
+      await ConfigAPI.newPlacement(cell.getData().id, {
+        new_placement: cell.getPosition(),
+      })
+    }
+
+    //  if (cell.)
+  })
+
   Graph.registerConnector(
     "algo-connector",
     (s, e) => {
@@ -255,10 +288,15 @@ const node_html = {
 
 export const antvMetadata = (nodeData: any) => {
   return {
+    id: nodeData.id,
     shape: "html",
     html: node_html,
     width: 180,
     height: 36,
+    position: {
+      x: nodeData?.placement?.x ?? 0,
+      y: nodeData?.placement?.y ?? 0,
+    },
     data: {
       name: nodeData.name,
       id: nodeData.id,

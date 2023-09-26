@@ -9,7 +9,14 @@
         <div id="modeler-container" style="flex: 1"></div>
       </div>
       <div class="w-[25rem] flex-initial border-t border-gray-200 overflow-y-auto p-5">
-        <GraphModelerConfigBar :cell="selected_cell" @saveNode="saveNode" @hideConfig="hideConfig" @deleteNode="deleteNode" @refresh-elemets-bar="renderAllNodes"></GraphModelerConfigBar>
+        <GraphModelerConfigBar
+          :graph="graph"
+          :cell="selected_cell"
+          @saveNode="saveNode"
+          @hideConfig="hideConfig"
+          @deleteNode="deleteNode"
+          @refresh-elemets-bar="renderAllNodes"
+        ></GraphModelerConfigBar>
       </div>
     </div>
   </div>
@@ -27,10 +34,11 @@ import GraphModelerElementsBar from "./GraphModelerElementsBar.vue"
 
 import { JSONGraphData } from "@/utils/transformer/json"
 
-import { graph_options_defaults, graph_register_defaults, antvNodesGenerator, createEmptyNode } from "@/utils/antv-model"
+import { graph_options_defaults, graph_register_defaults, antvMetadata, default_edge_attrs } from "@/utils/antv-model"
 
 import { ConfigAPI } from "@/api/config"
 import { uuid } from "@/utils/data/uuid"
+import { Edge } from "@/utils/graph"
 
 onMounted(async () => {
   renderAllNodes()
@@ -218,25 +226,50 @@ const selected_cell = ref()
 
 const registerEvents = (graph: Graph) => {
   graph.on("cell:selected", async ({ cell, options }) => {
+    if (cell?.isEdge()) {
+      selected_cell.value = cell
+      return
+    }
+
     const res = await cell.data.promise
 
-    const secondRes = await ConfigAPI.getNode(res.data.id)
+    let secondRes
 
-    selected_cell.value = {
-      id: cell.data.id,
-      gd: {
-        stageData: {
-          checkNames: [],
-          responsibleNames: [],
-          watchersNames: [],
+    if (res) {
+      secondRes = await ConfigAPI.getNode(res.data.id)
+      selected_cell.value = {
+        id: secondRes.data.id,
+        frontId: secondRes.data.noda_front,
+        gd: {
+          stageData: {
+            checkNames: [],
+            responsibleNames: [],
+            watchersNames: [],
+          },
+          configData: secondRes.data.fields,
+          nodeConfig: {
+            name: cell.data.name,
+            color: "#fff",
+          },
         },
-        configData: secondRes.data.fields,
-        nodeConfig: {
-          name: cell.data.name,
-          color: "#fff",
+      }
+    } else {
+      secondRes = await ConfigAPI.getNode(cell.getData().id)
+      selected_cell.value = {
+        id: secondRes.data.id,
+        gd: {
+          stageData: {
+            checkNames: [],
+            responsibleNames: [],
+            watchersNames: [],
+          },
+          configData: secondRes.data.fields,
+          nodeConfig: {
+            name: cell.data.name,
+            color: "#fff",
+          },
         },
-        isConfigurable: true,
-      },
+      }
     }
   })
 
@@ -246,6 +279,18 @@ const registerEvents = (graph: Graph) => {
 
   graph.on("blank:click", ({ e, x, y }) => {
     if (selected_cell.value != null) selected_cell.value = undefined
+  })
+
+  graph.on("edge:connected", async ({ edge }) => {
+    const res = await ConfigAPI.setLink({
+      start_id: graph.getCellById(edge.getSource().cell).getData().id,
+      end_id: graph.getCellById(edge.getTarget().cell).getData().id,
+      data: {
+        node_from_id: edge.getSource().cell,
+        node_to_id: edge.getTarget().cell,
+      },
+    })
+    edge.setData({ id: res.data.id })
   })
 }
 
@@ -264,21 +309,28 @@ const initModeler = async () => {
     registerEvents(graph.value)
 
     const res = await ConfigAPI.getProject()
-    let cells = []
-    cells = res.data.steps.forEach((item) => {
-      // graph.value.add_node({
-      //   id: item.id,
-      //   gd: item.nodeData.gd,
-      //   appearance: {
-      //     x: item.placement.x ?? 0,
-      //     y: item.placement.y.y ?? 0,
-      //     width: 180,
-      //     height: 36,
-      //     //   height: loc_node.getSize().height
-      //     //       ?? node_types[loc_node_data.gd.type].antv_metadata.height,
-      //   },
-      // })
+    const res2 = await ConfigAPI.getLinks()
+
+    let links = res2.data.map((item) => {
+      return graph.value?.createEdge({
+        ...default_edge_attrs,
+        id: item.id,
+        source: {
+          cell: item.data.node_from_id,
+          port: "out-1",
+        },
+        target: {
+          cell: item.data.node_to_id,
+          port: "in-1",
+        },
+      })
     })
+
+    let cells = res.data.steps.map((item) => {
+      return graph.value?.createNode(antvMetadata(item))
+    })
+    graph.value.addNodes(cells)
+    graph.value.addEdges(links)
   }
 }
 
@@ -300,7 +352,7 @@ const createStage = () => {
         name: "",
         color: "#fff",
       },
-      isConfigurable: true,
+      isNew: true,
     },
   }
 }
@@ -323,8 +375,7 @@ const editStage = (cell: any) => {
         name: cell.name,
         color: "#fff",
       },
-      isConfigurable: true,
-      isNew: true,
+      isScheme: true,
     },
   }
 }
@@ -367,9 +418,9 @@ const hideConfig = () => {
   selected_cell.value = undefined
 }
 
-const deleteNode = (node: AntvNode) => {
-  const nodeIndex = graphNodes.value.findIndex((item) => JSON.stringify(item) === JSON.stringify(node))
-  if (nodeIndex !== -1) graphNodes.value.splice(nodeIndex, 1)
+const deleteNode = async (node) => {
+  const res = await ConfigAPI.deleteScheme(node.id)
+  renderAllNodes()
 }
 
 // const changeNode = (val: Partial<Node> & Pick<Node, "id" | "appearance" | "gd">) => {

@@ -2,10 +2,13 @@
   <template v-if="nodeData === undefined">
     <span class="block text-center opacity-30 text-xl mt-14">Выберите или создайте этап</span>
   </template>
+  <template v-else-if="typeof props.cell.isEdge === 'function'">
+    <el-button class="config-buttons text-gray-600" @click="deleteEdge" type="danger" plain>Удалить</el-button>
+  </template>
   <template v-else>
-    <div v-if="nodeData.gd.isConfigurable" class="mb-4 flex justify-between">
+    <div class="mb-4 flex justify-between">
       <el-button class="config-buttons text-gray-600" @click="deleteNode" type="danger" plain>Удалить</el-button>
-      <div>
+      <div v-if="!nodeData.gd.isScheme">
         <el-button class="config-buttons text-gray-600" @click="hideConfigBar">Отмена</el-button>
         <el-button class="config-buttons text-white bg-blue-700" @click="saveNode">Сохранить</el-button>
       </div>
@@ -42,7 +45,10 @@ import BaseSelect from "../Base/BaseSelect.vue"
 import BaseSelectComponent from "../Base/BaseSelectComponent.vue"
 import { ConfigAPI } from "@/api/config"
 
+import { Graph } from "@antv/x6"
+
 const props = defineProps<{
+  graph: Graph
   cell: any
 }>()
 
@@ -89,6 +95,7 @@ const addComponent = (component: string) => {
 
 const hideConfigBar = () => {
   emits("hideConfig")
+  nodeData.value = undefined
 }
 
 const saveNode = async () => {
@@ -98,17 +105,40 @@ const saveNode = async () => {
       schema: nodeData.value.gd.configData,
     })
     emits("refreshElemetsBar")
+    hideConfigBar()
     return
   }
 
-  console.log(nodeData.value)
-
+  //   if (nodeData.value.gd.isScheme) {
+  //    const
+  //   }
   hideConfigBar()
 }
 
-const deleteNode = () => {
-  emits("deleteNode", props.cell)
-  hideConfigBar()
+const deleteNode = async () => {
+  if (nodeData.value.gd.isScheme) {
+    emits("deleteNode", props.cell)
+    hideConfigBar()
+    return
+  }
+
+  if (nodeData.value.gd.isNew) {
+    hideConfigBar()
+    return
+  }
+
+  if (props.cell.frontId) {
+    props.graph.removeNode(props.cell.frontId)
+    hideConfigBar()
+    return
+  } else {
+    props.graph.removeNode(props.cell.id)
+    hideConfigBar()
+  }
+}
+
+const deleteEdge = async () => {
+  props.graph.removeEdge(props.cell.id)
 }
 
 // const nodeNameRef = ref("")

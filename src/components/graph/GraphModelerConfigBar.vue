@@ -109,9 +109,11 @@ const saveNode = async () => {
     return
   }
 
-  //   if (nodeData.value.gd.isScheme) {
-  //    const
-  //   }
+  await ConfigAPI.changeNode(nodeData.value.id, {
+    name: nodeData.value.gd.nodeConfig.name,
+    fields: nodeData.value.gd.configData,
+  })
+
   hideConfigBar()
 }
 

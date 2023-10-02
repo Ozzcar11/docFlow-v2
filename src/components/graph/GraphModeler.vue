@@ -290,6 +290,7 @@ const registerEvents = (graph: Graph) => {
         node_to_id: edge.getTarget().cell,
       },
     })
+
     edge.setData({ id: res.data.id })
   })
 }
@@ -329,6 +330,8 @@ const initModeler = async () => {
     let cells = res.data.steps.map((item) => {
       return graph.value?.createNode(antvMetadata(item))
     })
+    
+
     graph.value.addNodes(cells)
     graph.value.addEdges(links)
   }

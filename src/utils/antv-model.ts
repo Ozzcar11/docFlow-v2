@@ -112,28 +112,9 @@ export const graph_options_defaults: Partial<Options.Manual> = {
 }
 
 export function graph_register_defaults(graph: Graph) {
-  /*
-    // https://x6.antv.vision/en/docs/api/registry/edge-tool
-    graph.on('edge:mouseenter', ({ cell }) => {
-        // console.log(cell)
-        cell.addTools(
-            [
-                {
-                    name: 'button-remove',
-                    args: {
-                        distance: 30,
-                        fill: '#000000'
-                    },
-                },
-            ]
-        )
-    })
-    graph.on('edge:mouseleave', ({ cell }) => {
-        setTimeout(() => {
-            cell.removeTool('button-remove')
-        }, 1500)
-    })
-    */
+  graph.on("node:added", ({ cell }) => {
+    console.log(cell)
+  })
 
   graph.on("node:mouseenter", ({ cell }) => {
     cell.addTools([{ name: "button-remove" }])
@@ -149,7 +130,7 @@ export function graph_register_defaults(graph: Graph) {
     if (typeof edge.id === "string") {
       await ConfigAPI.deleteLink(edge.getData().id)
     } else {
-      await ConfigAPI.deleteNode(edge.id)
+      await ConfigAPI.deleteLink(edge.id)
     }
   })
 
@@ -166,15 +147,13 @@ export function graph_register_defaults(graph: Graph) {
     if (typeof cell.id === "string") {
       const res = await cell.getData().promise
       await ConfigAPI.newPlacement(res.data.id, {
-        new_placement: cell.getPosition(),
+        new_replacement: cell.getPosition(),
       })
     } else {
       await ConfigAPI.newPlacement(cell.getData().id, {
-        new_placement: cell.getPosition(),
+        new_replacement: cell.getPosition(),
       })
     }
-
-    //  if (cell.)
   })
 
   Graph.registerConnector(

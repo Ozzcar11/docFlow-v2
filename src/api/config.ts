@@ -4,6 +4,9 @@ export const ConfigAPI = {
   createNode(body: any) {
     return DefaultAPIInstance.post("/templates/", body)
   },
+  changeNode(id: any, body: any) {
+    return DefaultAPIInstance.put(`/steps/${id}/`, body)
+  },
   getNodes() {
     return DefaultAPIInstance.get("/templates/")
   },

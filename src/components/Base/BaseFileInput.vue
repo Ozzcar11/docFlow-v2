@@ -11,7 +11,7 @@ defineProps<{
 
 <template>
   <div v-if="label">
-    <label class="base-label">Поле для ввода</label>
+    <label class="base-label">Загрузка документа</label>
     <div class="flex align-middle">
        <el-input class="base-input" :class="twClass" :modelValue="modelValue" :placeholder="placeholder ?? 'Введите текст'" @input="$emit('update:modelValue', $event)" />
        <button class="w-8 h-8 flex justify-center items-center" @click="$emit('deleteField')"><DeleteIcon /></button>

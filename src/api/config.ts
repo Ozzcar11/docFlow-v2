@@ -37,4 +37,7 @@ export const ConfigAPI = {
   newPlacement(id: any, body: any) {
     return DefaultAPIInstance.put(`/replacement-step-place/${id}/`, body)
   },
+  deleteField(id: any) {
+    return DefaultAPIInstance.delete(`/step-filed/delete/${id}/`)
+  },
 }

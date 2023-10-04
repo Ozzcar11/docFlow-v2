@@ -24,7 +24,7 @@
     </div>
     <hr class="my-5" />
     <div v-for="(item, idx) in nodeData.gd.configData" :key="idx">
-      <component :is="configComponents[item.component as keyof typeof configComponents]" v-model="item.data"></component>
+      <component :is="configComponents[item.component as keyof typeof configComponents]" v-model="item.data" :label="true" @deleteField="deleteField(item.id)"></component>
     </div>
     <div class="mt-4">
       <BaseSelectComponent @addComponent="addComponent" />
@@ -34,7 +34,8 @@
 
 <script lang="ts" setup>
 import { ref, watch, onMounted } from "vue"
-import type { Ref } from "vue"
+
+import { ElMessage } from "element-plus"
 
 import type { Node } from "@/utils/graph"
 
@@ -46,6 +47,7 @@ import BaseSelectComponent from "../Base/BaseSelectComponent.vue"
 import { ConfigAPI } from "@/api/config"
 
 import { Graph } from "@antv/x6"
+import { uuid } from "@/utils/data/uuid"
 
 const props = defineProps<{
   graph: Graph
@@ -90,6 +92,7 @@ const addComponent = (component: string) => {
   nodeData.value?.gd.configData.push({
     component,
     data: "",
+    id: uuid(),
   })
 }
 
@@ -98,7 +101,25 @@ const hideConfigBar = () => {
   nodeData.value = undefined
 }
 
+const deleteField = (value) => {
+  nodeData.value.gd.configData = nodeData.value.gd.configData.filter((item) => item.id !== value)
+  if (typeof value !== "string") {
+    ConfigAPI.deleteField(value)
+  }
+}
+
 const saveNode = async () => {
+  if (nodeData.value.gd.configData.length === 0) {
+    ElMessage.error("Создайте хотя-бы одно поле")
+    return
+  }
+  nodeData.value.gd.configData = nodeData.value.gd.configData.map((item) => {
+    if (typeof item.id === "string") {
+      item.id = undefined
+      return item
+    } else return item
+  })
+
   if (nodeData.value.gd.isNew) {
     const res = await ConfigAPI.createNode({
       name: nodeData.value.gd.nodeConfig.name,

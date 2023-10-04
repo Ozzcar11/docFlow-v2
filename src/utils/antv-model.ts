@@ -112,10 +112,6 @@ export const graph_options_defaults: Partial<Options.Manual> = {
 }
 
 export function graph_register_defaults(graph: Graph) {
-  graph.on("node:added", ({ cell }) => {
-    console.log(cell)
-  })
-
   graph.on("node:mouseenter", ({ cell }) => {
     cell.addTools([{ name: "button-remove" }])
   })

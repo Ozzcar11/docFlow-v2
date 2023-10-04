@@ -101,6 +101,7 @@ const initDnd = (graph: Graph) => {
     scaled: false,
     animation: true,
     getDropNode(draggingNode, options) {
+      const cloneNode = draggingNode.clone()
       const placement = graph.pageToLocal(pageX - 100, pageY - 15)
 
       const res = ConfigAPI.saveNode({
@@ -108,10 +109,12 @@ const initDnd = (graph: Graph) => {
         name: draggingNode.getData().name,
         project_id: 1,
         placement,
-        noda_front: "test",
+        noda_front: cloneNode.id,
       })
 
-      return draggingNode.clone()
+      cloneNode.data.promise = res
+
+      return cloneNode
     },
   })
 }

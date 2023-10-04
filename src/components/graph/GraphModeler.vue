@@ -226,6 +226,7 @@ const selected_cell = ref()
 
 const registerEvents = (graph: Graph) => {
   graph.on("cell:selected", async ({ cell, options }) => {
+
     if (cell?.isEdge()) {
       selected_cell.value = cell
       return
@@ -282,12 +283,25 @@ const registerEvents = (graph: Graph) => {
   })
 
   graph.on("edge:connected", async ({ edge }) => {
+    const sourceData = graph.getCellById(edge.getSource().cell).getData()
+    const targetData = graph.getCellById(edge.getTarget().cell).getData()
+
+    if (Object.prototype.hasOwnProperty.call(sourceData, "promise")) {
+      const res = await sourceData.promise
+      sourceData.id = res.data.id
+    }
+
+    if (Object.prototype.hasOwnProperty.call(targetData, "promise")) {
+      const res = await targetData.promise
+      targetData.id = res.data.id
+    }
+
     const res = await ConfigAPI.setLink({
-      start_id: graph.getCellById(edge.getSource().cell).getData().id,
-      end_id: graph.getCellById(edge.getTarget().cell).getData().id,
+      start_id: sourceData.id,
+      end_id: targetData.id,
       data: {
-        node_from_id: edge.getSource().cell,
-        node_to_id: edge.getTarget().cell,
+        node_from_id: sourceData.id,
+        node_to_id: targetData.id,
       },
     })
 
@@ -330,7 +344,6 @@ const initModeler = async () => {
     let cells = res.data.steps.map((item) => {
       return graph.value?.createNode(antvMetadata(item))
     })
-    
 
     graph.value.addNodes(cells)
     graph.value.addEdges(links)

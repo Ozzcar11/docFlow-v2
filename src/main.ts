@@ -1,14 +1,12 @@
-import { createApp } from 'vue'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-import App from './App.vue'
+import { createApp } from "vue"
 
-import Toast from "vue-toastification";
-import "vue-toastification/dist/index.css";
+import ElementPlus from "element-plus"
+import App from "./App.vue"
 
-import './style/index.scss'
+import Toast from "vue-toastification"
 
-createApp(App)
-    .use(ElementPlus)
-    .use(Toast, {closeOnClick: false, draggable: false})
-    .mount('#app')
+import "vue-toastification/dist/index.css"
+
+import router from "@/view/router"
+
+createApp(App).use(router).use(ElementPlus).use(Toast, { closeOnClick: false, draggable: false }).mount("#app")

@@ -38,7 +38,6 @@ import { graph_options_defaults, graph_register_defaults, antvMetadata, default_
 
 import { ConfigAPI } from "@/api/config"
 import { uuid } from "@/utils/data/uuid"
-import { Edge } from "@/utils/graph"
 
 onMounted(async () => {
   renderAllNodes()
@@ -226,7 +225,6 @@ const selected_cell = ref()
 
 const registerEvents = (graph: Graph) => {
   graph.on("cell:selected", async ({ cell, options }) => {
-
     if (cell?.isEdge()) {
       selected_cell.value = cell
       return

@@ -1,13 +1,11 @@
-<template>
-    <div class="min-h-screen">
-        <GraphModeler />
-    </div>
-</template>
-
 <script lang="ts" setup>
-import GraphModeler from './components/graph/GraphModeler.vue';
+import { RouterView } from "vue-router"
 </script>
 
-<style lang="scss">
+<template>
+  <RouterView />
+</template>
 
+<style lang="scss">
+@import "./style/index.scss";
 </style>

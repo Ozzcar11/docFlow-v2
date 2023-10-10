@@ -4,38 +4,47 @@ import PlusIcon from "@/assets/icons/PlusIcon.vue"
 
 import { Search } from "@element-plus/icons-vue"
 
-import { DepartmentsAPI } from "@/api/departments"
-
-import { useRoute } from "vue-router"
-
-const route = useRoute()
-
 import router from "../router"
 
 import { ref, onMounted } from "vue"
 import type { Ref } from "vue"
+import { ObjectsAPI } from "@/api/objects"
 
 const searchValue: Ref<string> = ref("")
 
-const tableData = ref([])
+const tableData = ref([
+  {
+    id: 1,
+    name: "Магомедов Магомед Магомедович",
+    login: "magomed",
+    dep: "Несколько",
+    role: "Администратор",
+    lustVisit: "26.09.2023, 16:56",
+  },
+])
 
-const getDepartments = async () => {
-  const { data } = await DepartmentsAPI.getDepartments()
-  tableData.value = data
+const getProjects = async () => {
+  const res = await ObjectsAPI.getProjects()
+  tableData.value = res.data
 }
 
+const newName = ref("")
+
+const createObject = () => {}
+
 onMounted(() => {
-  getDepartments()
+  getProjects()
 })
 </script>
 
 <template>
   <el-header class="header-users">
     <div class="flex ml-1">
-      <div class="text-2xl">Отделы</div>
+      <div class="text-2xl">Объекты</div>
       <span class="mx-4 text-2xl opacity-10">|</span>
-      <el-button type="primary" class="header-users__button" @click="router.push('/groups/create-group/')">
-        Добавить
+      <el-input v-model="newName" class="create-newobject" placeholder="Введите название объекта для создания" clearable></el-input>
+      <el-button v-if="newName.length !== 0" type="primary" class="header-users__button" @click="createObject">
+        Создать
         <PlusIcon class="w-6 h-6 ml-2" />
       </el-button>
     </div>
@@ -45,12 +54,13 @@ onMounted(() => {
   </el-header>
   <el-main>
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="name" label="Название отдела" />
-      <el-table-column prop="chief" label="Руководитель" />
-      <el-table-column prop="number_of_stuff" label="Кол-во сотрудников " />
-      <el-table-column width="100">
+      <el-table-column prop="name" label="Название" />
+      <el-table-column prop="user" label="Пользователь" />
+      <el-table-column prop="last_change" label="Последнее изменение" />
+      <el-table-column prop="date_create" label="Дата создания" />
+      <el-table-column>
         <template #default="{ row: { id } }">
-          <router-link :to="`/groups/${id}`">
+          <router-link :to="`/project/${id}`">
             <EditIcon />
           </router-link>
         </template>
@@ -73,5 +83,9 @@ onMounted(() => {
   &__button {
     @apply font-medium bg-blue-600 px-4 py-2.5 rounded-xl h-10;
   }
+}
+
+.create-newobject {
+  @apply mr-3 w-96 h-10;
 }
 </style>

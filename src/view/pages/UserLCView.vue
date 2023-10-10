@@ -1,22 +1,43 @@
 <script setup lang="ts">
+import { UsersAPI } from "@/api/users"
 import router from "../router"
 import BackIcon from "@/assets/icons/BackIcon.vue"
 import CheckIcon from "@/assets/icons/CheckIcon.vue"
 
-import { ref } from "vue"
+import { ElMessage } from "element-plus"
 
-const saveUser = () => {
-  console.log("save")
+import { ref, onMounted } from "vue"
+import { useRoute } from "vue-router"
+
+const route = useRoute()
+
+const saveUser = async () => {
+  if (userData.value.password === undefined) {
+    const res = await UsersAPI.changeUser(userData.value.id, userData.value)
+    router.push("/users/")
+    ElMessage({
+      message: "Пользователь успешно сохранён",
+      type: "success",
+    })
+  } else {
+    const res = await UsersAPI.createUser(userData.value)
+    router.push("/users/")
+    ElMessage({
+      message: "Пользователь успешно создан",
+      type: "success",
+    })
+  }
 }
 
 const userData = ref({
-  secondName: "",
-  name: "",
-  thName: "",
-  login: "",
-  departments: "",
-  role: "",
-  additionalData: "",
+  id: "",
+  last_name: "",
+  first_name: "",
+  middle_name: "",
+  username: "",
+  job: "",
+  description: "",
+  password: "",
 })
 
 const departments = [
@@ -25,6 +46,18 @@ const departments = [
     label: "Администратор",
   },
 ]
+
+const getUser = async () => {
+  if (route.params.id !== "create-user") {
+    const { data } = await UsersAPI.getUser(route.params.id)
+    userData.value = data
+    console.log(userData.value)
+  }
+}
+
+onMounted(() => {
+  getUser()
+})
 </script>
 
 <template>
@@ -40,39 +73,46 @@ const departments = [
     <span class="mx-4 text-2xl opacity-10 align-middle h-10">|</span>
     <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/users' }">Пользователи</el-breadcrumb-item>
-      <el-breadcrumb-item>Редактирование</el-breadcrumb-item>
+      <el-breadcrumb-item v-if="userData.password !== undefined">Редактирование</el-breadcrumb-item>
+      <el-breadcrumb-item v-else>Редактирование</el-breadcrumb-item>
     </el-breadcrumb>
   </el-header>
   <el-main class="create-main">
     <el-row>
       <el-col :span="8">Фамилия</el-col>
-      <el-col :span="6"><el-input v-model="userData.secondName" class="create-user__input" clearable></el-input> </el-col>
+      <el-col :span="6"><el-input v-model="userData.last_name" class="create-user__input" clearable></el-input> </el-col>
     </el-row>
     <el-row>
       <el-col :span="8">Имя</el-col>
-      <el-col :span="6"><el-input v-model="userData.name" class="create-user__input" clearable></el-input> </el-col>
+      <el-col :span="6"><el-input v-model="userData.first_name" class="create-user__input" clearable></el-input> </el-col>
     </el-row>
     <el-row>
       <el-col :span="8">Отчество</el-col>
-      <el-col :span="6"><el-input v-model="userData.thName" class="create-user__input" clearable></el-input> </el-col>
+      <el-col :span="6"><el-input v-model="userData.middle_name" class="create-user__input" clearable></el-input> </el-col>
     </el-row>
     <el-row>
       <el-col :span="8">Логин</el-col>
       <el-col :span="6">
-        <el-input v-model="userData.login" class="create-user__input" clearable></el-input>
+        <el-input v-model="userData.username" class="create-user__input" clearable></el-input>
+      </el-col>
+    </el-row>
+    <el-row v-if="userData.password !== undefined">
+      <el-col :span="8">Пароль</el-col>
+      <el-col :span="6">
+        <el-input v-model="userData.password" class="create-user__input" clearable></el-input>
       </el-col>
     </el-row>
     <el-row>
       <el-col :span="8">Должность</el-col>
       <el-col :span="6">
-        <el-select v-model="userData.role" class="w-full create-select" placeholder="Выберите должность">
+        <el-select v-model="userData.job" class="w-full create-select" placeholder="Выберите должность">
           <el-option v-for="item in departments" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-col>
     </el-row>
     <el-row>
       <el-col :span="8">Доп. информация</el-col>
-      <el-col :span="6"> <el-input v-model="userData.additionalData" maxlength="100" class="create-user__textarea" placeholder="Введите текст" show-word-limit type="textarea" /> </el-col>
+      <el-col :span="6"> <el-input v-model="userData.description" maxlength="100" class="create-user__textarea" placeholder="Введите текст" show-word-limit type="textarea" /> </el-col>
     </el-row>
   </el-main>
 </template>

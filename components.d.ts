@@ -32,6 +32,7 @@ declare module 'vue' {
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
+    ElTreeSelect: typeof import('element-plus/es')['ElTreeSelect']
     GraphModeler: typeof import('./src/components/graph/GraphModeler.vue')['default']
     GraphModelerConfigBar: typeof import('./src/components/graph/GraphModelerConfigBar.vue')['default']
     GraphModelerElementsBar: typeof import('./src/components/graph/GraphModelerElementsBar.vue')['default']

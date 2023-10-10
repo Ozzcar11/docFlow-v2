@@ -6,101 +6,23 @@ import { Search } from "@element-plus/icons-vue"
 
 import router from "../router"
 
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 import type { Ref } from "vue"
+import { UsersAPI } from "@/api/users"
 
 const searchValue: Ref<string> = ref("")
 
-const tableData = ref([
-  {
-    id: 1,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-  {
-    id: 2,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-  {
-    id: 3,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-  {
-    id: 4,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-  {
-    id: 5,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-  {
-    id: 6,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-  {
-    id: 7,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-  {
-    id: 8,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-  {
-    id: 9,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-  {
-    id: 10,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-  {
-    id: 11,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-])
+const tableData = ref([])
+
+const getUsers = async () => {
+  const res = await UsersAPI.getUsers()
+  tableData.value = res.data
+  console.log(res.data)
+}
+
+onMounted(() => {
+  getUsers()
+})
 </script>
 
 <template>
@@ -113,17 +35,17 @@ const tableData = ref([
         <PlusIcon class="w-6 h-6 ml-2" />
       </el-button>
     </div>
-    <div class="mr-20">
+    <!-- <div class="mr-20">
       <el-input v-model="searchValue" class="header-users__search-input" placeholder="Поиск" :prefix-icon="Search" />
-    </div>
+    </div> -->
   </el-header>
   <el-main>
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="name" label="ФИО" />
-      <el-table-column prop="login" label="Логин" />
-      <el-table-column prop="dep" label="Отдел" />
-      <el-table-column prop="role" label="Роль" />
-      <el-table-column prop="lustVisit" label="Последний визит" />
+      <el-table-column prop="middle_name" label="ФИО" />
+      <el-table-column prop="username" label="Логин" />
+      <el-table-column prop="groups" label="Отдел" />
+      <el-table-column prop="job" label="Должность" />
+      <!-- <el-table-column prop="lustVisit" label="Последний визит" /> -->
       <el-table-column>
         <template #default="{ row: { id } }">
           <router-link :to="`/users/${id}`">

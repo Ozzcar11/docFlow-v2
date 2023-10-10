@@ -39,10 +39,14 @@ import { graph_options_defaults, graph_register_defaults, antvMetadata, default_
 import { ConfigAPI } from "@/api/config"
 import { uuid } from "@/utils/data/uuid"
 
+import { useRoute } from "vue-router"
+
 onMounted(async () => {
   renderAllNodes()
   initModeler()
 })
+
+const route = useRoute()
 
 const graphData: Ref<JSONGraphData> = ref({
   nodes: [
@@ -321,7 +325,8 @@ const initModeler = async () => {
     graph_register_defaults(graph.value)
     registerEvents(graph.value)
 
-    const res = await ConfigAPI.getProject()
+    const res = await ConfigAPI.getProject(route.params.id)
+
     const res2 = await ConfigAPI.getLinks()
 
     let links = res2.data.map((item) => {

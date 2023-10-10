@@ -8,7 +8,12 @@ const router = createRouter({
       component: () => import("@/view/layouts/MainLayout.vue"),
       children: [
         {
-          path: "/users/",
+          path: "/",
+          name: "Objects",
+          component: () => import("@/view/pages/ObjectsView.vue"),
+        },
+        {
+          path: "/users",
           name: "Users",
           component: () => import("@/view/pages/UsersView.vue"),
         },
@@ -23,7 +28,7 @@ const router = createRouter({
           component: () => import("@/view/pages/UserLCView.vue"),
         },
         {
-          path: "/groups/",
+          path: "/groups",
           name: "Groups",
           component: () => import("@/view/pages/GroupsView.vue"),
         },
@@ -32,7 +37,22 @@ const router = createRouter({
           name: "Group",
           component: () => import("@/view/pages/GroupView.vue"),
         },
+        {
+          path: "/groups/create-group",
+          name: "CreateGroup",
+          component: () => import("@/view/pages/CreateGroupView.vue"),
+        },
       ],
+    },
+    {
+      path: "/project/:id",
+      name: "Object",
+      component: () => import("@/view/pages/ObjectView.vue"),
+    },
+    {
+      path: "/newConfig",
+      name: "CreateNewObject",
+      component: () => import("@/view/pages/ObjectView.vue"),
     },
   ],
 })

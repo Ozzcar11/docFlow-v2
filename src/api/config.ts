@@ -32,12 +32,15 @@ export const ConfigAPI = {
     return DefaultAPIInstance.delete(`/links/${id}/`)
   },
   deleteScheme(id: any) {
-    return DefaultAPIInstance.delete(`/templates/delete/${id}/`)
+    return DefaultAPIInstance.delete(`/templates/${id}/`)
   },
   newPlacement(id: any, body: any) {
     return DefaultAPIInstance.put(`/replacement-step-place/${id}/`, body)
   },
   deleteField(id: any) {
     return DefaultAPIInstance.delete(`/step-filed/delete/${id}/`)
+  },
+  setResponbleUsers(id: any, body: any) {
+    return DefaultAPIInstance.put(`/responsible-step-users/${id}/`, body)
   },
 }

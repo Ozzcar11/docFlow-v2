@@ -34,6 +34,8 @@ import { antvMetadata } from "@/utils/antv-model"
 import { ConfigAPI } from "@/api/config"
 import { clone } from "@antv/x6/lib/util/object/object"
 
+import { useRoute } from "vue-router"
+
 const props = defineProps<{
   graph: Graph | undefined
   graphNodes: any
@@ -67,6 +69,8 @@ watch(
 )
 
 const renderComponent = ref(true)
+
+const route = useRoute()
 
 const forceRender = async () => {
   renderComponent.value = false
@@ -107,7 +111,7 @@ const initDnd = (graph: Graph) => {
       const res = ConfigAPI.saveNode({
         templates_schema: draggingNode.getData().id,
         name: draggingNode.getData().name,
-        project_id: 1,
+        project_id: route.params.id,
         placement,
         noda_front: cloneNode.id,
       })

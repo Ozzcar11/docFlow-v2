@@ -14,13 +14,13 @@
       </div>
     </div>
     <BaseInput twClass="text-xl" class="mb-5" placeholder="Название" v-model="nodeData.gd.nodeConfig.name" />
-    <div class="grid grid-cols-2 gap-y-2 my-5">
+    <div v-if="!nodeData.gd.isNew" class="grid grid-cols-2 gap-y-2 my-5">
       <div class="text-sm text-gray-600 flex items-center">Проверяющий</div>
       <BaseSelect v-model="nodeData.gd.stageData.checkNames" :options="users" />
       <div class="text-sm text-gray-600 flex items-center">Ответственный</div>
       <BaseSelect v-model="nodeData.gd.stageData.responsibleNames" :options="users" />
       <div class="text-sm text-gray-600 flex items-center">Наблюдатели</div>
-      <BaseSelect v-model="nodeData.gd.stageData.watchersNames" :options="users" />
+      <BaseSelect v-model="nodeData.gd.stageData.watchersNames" multiple :options="users" />
     </div>
     <hr class="my-5" />
     <div v-for="(item, idx) in nodeData.gd.configData" :key="idx">
@@ -48,11 +48,17 @@ import { ConfigAPI } from "@/api/config"
 
 import { Graph } from "@antv/x6"
 import { uuid } from "@/utils/data/uuid"
+import { UsersAPI } from "@/api/users"
+import fullName from "@/utils/data/fullName"
+import { DepartmentsAPI } from "@/api/departments"
+import { useRoute } from "vue-router"
 
 const props = defineProps<{
   graph: Graph
   cell: any
 }>()
+
+const route = useRoute()
 
 const nodeData = ref()
 
@@ -63,30 +69,37 @@ watch(
   },
 )
 
+onMounted(() => {
+  getUsers()
+})
+
 const emits = defineEmits(["saveNode", "hideConfig", "deleteNode", "refreshElemetsBar"])
 
-const users = [
+const getUsers = async () => {
+  const { data } = await UsersAPI.getUsers()
+  //   const res2 = await DepartmentsAPI.getDepartments()
+  //   console.log(res2)
+
+  users.value = data.map((item) => {
+    return { value: item.id, label: fullName(item.first_name, item.last_name, item.middle_name) }
+  })
+}
+
+const users = ref([
   {
-    value: "1",
-    label: "Атав",
+    label: "Popular cities",
+    options: [
+      {
+        value: "Shanghai",
+        label: "Shanghai",
+      },
+      {
+        value: "Beijing",
+        label: "Beijing",
+      },
+    ],
   },
-  {
-    value: "2",
-    label: "Мухтар",
-  },
-  {
-    value: "3",
-    label: "Рашид",
-  },
-  {
-    value: "4",
-    label: "Залимхан",
-  },
-  {
-    value: "5",
-    label: "Иса",
-  },
-]
+])
 
 const addComponent = (component: string) => {
   nodeData.value?.gd.configData.push({
@@ -130,10 +143,22 @@ const saveNode = async () => {
     return
   }
 
-  await ConfigAPI.changeNode(nodeData.value.id, {
-    name: nodeData.value.gd.nodeConfig.name,
-    fields: nodeData.value.gd.configData,
-  })
+  try {
+    await ConfigAPI.changeNode(nodeData.value.id, {
+      name: nodeData.value.gd.nodeConfig.name,
+      fields: nodeData.value.gd.configData,
+    })
+
+    await ConfigAPI.setResponbleUsers(nodeData.value.id, {
+      responsible_persons_scheme: {
+        users_editor: nodeData.value.gd.stageData.checkNames,
+        users_look: nodeData.value.gd.stageData.watchersNames,
+        users_inspecting: nodeData.value.gd.stageData.responsibleNames,
+      },
+    })
+  } catch (e) {
+    ElMessage.error(`Произошла ошибка: ${e.message}`)
+  }
 
   hideConfigBar()
 }

@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 
+import { useAuthStore } from "../../stores/auth"
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -50,18 +52,33 @@ const router = createRouter({
       component: () => import("@/view/pages/ObjectView.vue"),
     },
     {
-      path: "/newConfig",
-      name: "CreateNewObject",
-      component: () => import("@/view/pages/ObjectView.vue"),
+      path: "/login",
+      name: "Login",
+      component: () => import("@/view/pages/LoginView.vue"),
+    },
+    {
+      path: "/user-lc",
+      name: "User",
+      component: () => import("@/view/pages/UserProjectsView.vue"),
+    },
+    {
+      path: "/user-lc/:id",
+      name: "UserProject",
+      component: () => import("@/view/pages/UserProjectView.vue"),
     },
   ],
 })
 
-// router.beforeEach((to, from, next) => {
-//   if (!useAuthStore().getToken && to.path !== "/login") next("/login")
-//   else {
-//     next()
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  const isAuthorized = Object.prototype.hasOwnProperty.call(localStorage, "accessToken")
+
+  if (isAuthorized || to.path === "/login") next()
+  else {
+    authStore.logout()
+    next("/login")
+  }
+})
 
 export default router

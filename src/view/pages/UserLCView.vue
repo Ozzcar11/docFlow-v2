@@ -5,6 +5,7 @@ import BackIcon from "@/assets/icons/BackIcon.vue"
 import CheckIcon from "@/assets/icons/CheckIcon.vue"
 
 import { ElMessage } from "element-plus"
+import type { FormInstance, FormRules } from "element-plus"
 
 import { ref, onMounted } from "vue"
 import { useRoute } from "vue-router"
@@ -42,8 +43,12 @@ const userData = ref({
 
 const departments = [
   {
-    value: "admin",
-    label: "Администратор",
+    value: "Frontend",
+    label: "Фронтэнд",
+  },
+  {
+    value: "Backend",
+    label: "Бекэнд",
   },
 ]
 
@@ -54,6 +59,8 @@ const getUser = async () => {
     console.log(userData.value)
   }
 }
+
+const userLcForm = ref<FormInstance>()
 
 onMounted(() => {
   getUser()
@@ -78,6 +85,11 @@ onMounted(() => {
     </el-breadcrumb>
   </el-header>
   <el-main class="create-main">
+    <!-- <el-form ref="userLcForm" :model="ruleForm" :rules="rules" label-width="120px" class="demo-ruleForm" :size="formSize">
+      <el-form-item label="Activity name" prop="name">
+        <el-input v-model="ruleForm.name" />
+      </el-form-item>
+    </el-form> -->
     <el-row>
       <el-col :span="8">Фамилия</el-col>
       <el-col :span="6"><el-input v-model="userData.last_name" class="create-user__input" clearable></el-input> </el-col>

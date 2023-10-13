@@ -5,7 +5,10 @@ import router from "../router"
 
 import { DepartmentsAPI } from "@/api/departments"
 import { UsersAPI } from "@/api/users"
-const setLeader = ref([])
+import { ElMessage } from "element-plus"
+import fullName from "@/utils/data/fullName"
+
+const setLeader = ref(null)
 
 const groupData = ref({
   name: "",
@@ -13,9 +16,13 @@ const groupData = ref({
 })
 
 const addGroup = async () => {
-  groupData.value.chief = +Object.keys(setLeader.value)[0]
-  const res = await DepartmentsAPI.createDepartment(groupData.value)
-  router.push("/groups/")
+  try {
+    groupData.value.chief = setLeader.value
+    const res = await DepartmentsAPI.createDepartment(groupData.value)
+    router.push("/groups/")
+  } catch (e) {
+    ElMessage.error("Проверьте правильность внесённых данных")
+  }
 }
 
 const saveLeader = () => {
@@ -23,9 +30,7 @@ const saveLeader = () => {
 }
 
 const chief = computed(() => {
-  const res = usersData.value.find((item) => setLeader.value.find((item1, idx) => idx == item.id))
-  console.log(res)
-
+  const res = usersData.value.find((item) => +item.id == setLeader.value)
   if (res) return res
   return null
 })
@@ -36,6 +41,9 @@ const dialogLeader = ref(false)
 const getUsers = async () => {
   const res = await UsersAPI.getUsers()
   usersData.value = res.data
+  usersData.value = usersData.value.map((item) => {
+    return { ...item, fullName: fullName(item.first_name, item.last_name, item.middle_name) }
+  })
 }
 
 onMounted(() => {
@@ -61,16 +69,16 @@ onMounted(() => {
     </el-row>
     <el-row>
       <el-col :span="8">Руководитель</el-col>
-      <el-button class="header-users__button white-btn" size="default" @click="dialogLeader = true">{{ chief?.first_name ?? "Выберите руководителя" }}</el-button>
+      <el-button class="header-users__button white-btn" size="default" @click="dialogLeader = true">{{ chief?.fullName ?? "Выберите руководителя" }}</el-button>
     </el-row>
   </el-main>
   <el-dialog class="dialog" v-model="dialogLeader" title="Руководитель отдела" width="50%">
     <el-table :data="usersData" class="create-dialog" width="100%">
-      <el-table-column prop="first_name" />
+      <el-table-column prop="fullName" />
       <el-table-column prop="job" />
       <el-table-column width="50">
         <template #default="{ row: { id } }">
-          <el-checkbox v-model="setLeader[id]" size="large" />
+          <el-radio id="leader" v-model="setLeader" :label="id" />
         </template>
       </el-table-column>
     </el-table>
@@ -106,5 +114,8 @@ onMounted(() => {
 .create-dialog {
   max-height: 500px;
   overflow-y: auto;
+  .el-radio__label {
+    font-size: 0;
+  }
 }
 </style>

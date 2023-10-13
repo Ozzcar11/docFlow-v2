@@ -12,16 +12,7 @@ import { ObjectsAPI } from "@/api/objects"
 
 const searchValue: Ref<string> = ref("")
 
-const tableData = ref([
-  {
-    id: 1,
-    name: "Магомедов Магомед Магомедович",
-    login: "magomed",
-    dep: "Несколько",
-    role: "Администратор",
-    lustVisit: "26.09.2023, 16:56",
-  },
-])
+const tableData = ref([])
 
 const getProjects = async () => {
   const res = await ObjectsAPI.getProjects()
@@ -30,7 +21,13 @@ const getProjects = async () => {
 
 const newName = ref("")
 
-const createObject = () => {}
+const createObject = async () => {
+  const res = await ObjectsAPI.createProject({
+    name: newName.value,
+  })
+  getProjects()
+  newName.value = ""
+}
 
 onMounted(() => {
   getProjects()

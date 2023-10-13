@@ -5,7 +5,12 @@
       <div class="w-[25rem] flex-initial border-gray-300 border-r relative">
         <GraphModelerElementsBar v-if="graph !== null" :graph="graph" :graphNodes="graphNodes" :refreshComponent="refreshComponent" @createStage="createStage" @editStage="editStage" />
       </div>
-      <div id="modeler-container-box" class="w-auto flex flex-grow border-b-0 border-gray-300/90" style="border-width: 3px">
+      <div id="modeler-container-box" class="w-auto flex flex-grow flex-col border-b-0 border-gray-300/90" style="border-width: 3px">
+        <div class="flex justify-between p-3 border-b items-center">
+          <div class="w-36"></div>
+          <div class="font-medium text-lg">{{ projectName }}</div>
+          <el-button class="graph-button" @click="endConfig">Завершить процесс</el-button>
+        </div>
         <div id="modeler-container" style="flex: 1"></div>
       </div>
       <div class="w-[25rem] flex-initial border-t border-gray-200 overflow-y-auto p-5">
@@ -40,6 +45,7 @@ import { ConfigAPI } from "@/api/config"
 import { uuid } from "@/utils/data/uuid"
 
 import { useRoute } from "vue-router"
+import router from "@/view/router"
 
 onMounted(async () => {
   renderAllNodes()
@@ -221,6 +227,10 @@ const graphData: Ref<JSONGraphData> = ref({
   ],
 })
 
+const endConfig = () => {
+  router.push("/")
+}
+
 const graphNodes = ref([])
 
 const graph: Ref<Graph | undefined> = ref()
@@ -240,14 +250,15 @@ const registerEvents = (graph: Graph) => {
 
     if (res) {
       secondRes = await ConfigAPI.getNode(res.data.id)
+      console.log(secondRes.data)
       selected_cell.value = {
         id: secondRes.data.id,
         frontId: secondRes.data.noda_front,
         gd: {
           stageData: {
-            checkNames: [],
-            responsibleNames: [],
-            watchersNames: [],
+            checkNames: secondRes.data.responsible_persons_scheme.users_editor,
+            responsibleNames: secondRes.data.responsible_persons_scheme.users_inspecting,
+            watchersNames: secondRes.data.responsible_persons_scheme.users_look,
           },
           configData: secondRes.data.fields,
           nodeConfig: {
@@ -258,13 +269,14 @@ const registerEvents = (graph: Graph) => {
       }
     } else {
       secondRes = await ConfigAPI.getNode(cell.getData().id)
+      console.log(secondRes.data)
       selected_cell.value = {
         id: secondRes.data.id,
         gd: {
           stageData: {
-            checkNames: [],
-            responsibleNames: [],
-            watchersNames: [],
+            checkNames: secondRes.data.responsible_persons_scheme.users_editor,
+            responsibleNames: secondRes.data.responsible_persons_scheme.users_inspecting,
+            watchersNames: secondRes.data.responsible_persons_scheme.users_look,
           },
           configData: secondRes.data.fields,
           nodeConfig: {
@@ -311,6 +323,8 @@ const registerEvents = (graph: Graph) => {
   })
 }
 
+const projectName = ref("")
+
 const initModeler = async () => {
   const container = document.getElementById("modeler-container")!
 
@@ -327,9 +341,11 @@ const initModeler = async () => {
 
     const res = await ConfigAPI.getProject(route.params.id)
 
-    const res2 = await ConfigAPI.getLinks()
+    projectName.value = res.data.name
 
-    let links = res2.data.map((item) => {
+    const res2 = res.data.links
+
+    let links = res2.map((item) => {
       return graph.value?.createEdge({
         ...default_edge_attrs,
         id: item.id,
@@ -466,6 +482,10 @@ const deleteNode = async (node) => {
       text-decoration: initial;
     }
   }
+}
+
+.graph-button {
+  @apply font-medium bg-blue-600 px-4 py-2.5 rounded-xl h-10 text-white;
 }
 
 .actions {

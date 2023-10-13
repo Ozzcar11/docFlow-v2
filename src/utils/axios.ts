@@ -1,5 +1,5 @@
 import axios from "axios"
-// import { useAuthStore } from "../stores/login";
+import { useAuthStore } from "@/stores/auth"
 
 const loginConfig = {
   baseURL: "http://10.11.61.29:8000/api",
@@ -11,25 +11,32 @@ const loginConfig = {
 
 export const DefaultAPIInstance = axios.create(loginConfig)
 
-// DefaultAPIInstance.interceptors.request.use(
-//   async (config) => {
-//      const authStore = useAuthStore();
-//      config.headers.Authorization = authStore.token;
-//     return config
-//   },
-//   (error) => Promise.reject(error),
-// )
+DefaultAPIInstance.interceptors.request.use(async (config) => {
+  const authStore = useAuthStore()
+  const TTEtoken = localStorage.getItem("TTEtoken")
+//   if (TTEtoken) {
+//     if (new Date().getTime() / 1000 > TTEtoken) {
+//       const res = await AuthAPI.refreshToken()
+//       authStore.refreshToken(res.data.access)
+//     }
+//   }
 
-// DefaultAPIInstance.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     //  const errorCode = error.response.data.code;
-//     //  if (errorCode === 44 || errorCode === 45) {
-//     //    const authStore = useAuthStore();
-//     //    authStore.token = "";
-//     //    authStore.logout();
-//     //    return axios(error.config);
-//     //  }
-//     return Promise.reject(error)
-//   },
-// )
+  const accessToken = localStorage.getItem("accessToken")
+  if (accessToken) config.headers["authorization"] = `Bearer ${accessToken}`
+
+  return config
+})
+
+DefaultAPIInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+   //  const originalRequest = error.config
+   //  if (error.code === 401) {
+   //    const res = await AuthAPI.refreshToken()
+   //    originalRequest._retry = true
+   //    store.commit("refreshToken", res.data.access)
+   //    return axios(originalRequest)
+   //  }
+    return Promise.reject(error)
+  },
+)

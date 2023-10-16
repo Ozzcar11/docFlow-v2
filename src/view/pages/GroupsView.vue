@@ -53,7 +53,7 @@ onMounted(() => {
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="name" label="Название отдела" />
       <el-table-column prop="chief" label="Руководитель" />
-      <el-table-column prop="count_users" label="Кол-во сотрудников " />
+      <el-table-column prop="count_users" label="Кол-во сотрудников" align="center" />
       <el-table-column width="50">
         <template #default="{ row: { id } }">
           <router-link :to="`/groups/${id}`">

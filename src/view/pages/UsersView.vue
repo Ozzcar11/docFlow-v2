@@ -10,6 +10,7 @@ import router from "../router"
 import { ref, onMounted } from "vue"
 import type { Ref } from "vue"
 import { UsersAPI } from "@/api/users"
+import fullName from "@/utils/data/fullName"
 
 const searchValue: Ref<string> = ref("")
 
@@ -17,7 +18,9 @@ const tableData = ref([])
 
 const getUsers = async () => {
   const res = await UsersAPI.getUsers()
-  tableData.value = res.data
+  tableData.value = res.data.map((item) => {
+    return { ...item, fullName: fullName(item.last_name, item.first_name, item.middle_name), groups: item.groups.map((item) => item.name).join("\n") }
+  })
 }
 
 const deleteUser = async (id) => {
@@ -46,9 +49,13 @@ onMounted(() => {
   </el-header>
   <el-main>
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="middle_name" label="ФИО" />
+      <el-table-column prop="fullName" label="ФИО" />
       <el-table-column prop="username" label="Логин" />
-      <el-table-column prop="groups" label="Отдел" />
+      <el-table-column prop="groups" label="Отдел">
+        <template #default="{ row: { groups } }">
+          <div class="whitespace-pre">{{ groups }}</div>
+        </template>
+      </el-table-column>
       <el-table-column prop="job" label="Должность" />
       <!-- <el-table-column prop="lustVisit" label="Последний визит" /> -->
       <el-table-column width="50">

@@ -67,6 +67,15 @@ const addToGroup = async () => {
 const createNewUser = async () => {
   const res = await UsersAPI.createUser(userData.value)
 
+  await DepartmentsAPI.deleteUser({
+    id_department: route.params.id,
+    id_users: [res.data.id],
+    action: "add",
+  })
+
+  getUsers()
+  getUserData()
+
   dialogCreateUser.value = false
 }
 
@@ -87,8 +96,12 @@ const addUser = () => {
 
 const departments = [
   {
-    value: "admin",
-    label: "Администратор",
+    value: "Frontend",
+    label: "Фронтэнд",
+  },
+  {
+    value: "Backend",
+    label: "Бекэнд",
   },
 ]
 
@@ -103,7 +116,9 @@ const deleteUser = async (id) => {
     id_users: [id],
     action: "remove",
   })
-  tableData.value = tableData.value.filter((item) => item.id !== id)
+  //   tableData.value = tableData.value.filter((item) => item.id !== id)
+  getUsers()
+  getUserData()
 }
 
 const changeLeader = () => {
@@ -117,6 +132,10 @@ const getUsers = async () => {
 }
 
 const usersData = ref([])
+
+const dontExistUsers = computed(() => {
+  return usersData.value.filter((item) => !item.groups.find((item) => item.id === +route.params.id))
+})
 
 const getUserData = async () => {
   const res = await UsersAPI.getUsers()
@@ -165,7 +184,7 @@ onMounted(() => {
   </el-main>
   <el-dialog class="dialog" v-model="dialogVisible" title="Добавление сотрудников в отдел" width="50%">
     <!-- <el-input v-model="usersSearch" class="dialog-group__input" placeholder="Поиск" :prefix-icon="Search" /> -->
-    <el-table class="group-adduser" :data="usersData" width="100%">
+    <el-table class="group-adduser" :data="dontExistUsers" width="100%">
       <el-table-column prop="first_name" />
       <el-table-column prop="job" />
       <el-table-column width="50">
@@ -228,7 +247,7 @@ onMounted(() => {
     <el-row>
       <el-col :span="14">Пароль</el-col>
       <el-col :span="10">
-        <el-input v-model="userData.password" class="create-user__input" clearable></el-input>
+        <el-input v-model="userData.password" type="password" class="create-user__input" clearable></el-input>
       </el-col>
     </el-row>
     <el-row>

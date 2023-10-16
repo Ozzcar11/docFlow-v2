@@ -8,7 +8,8 @@
   <template v-else>
     <div class="mb-4 flex justify-between">
       <el-button class="config-buttons text-gray-600" @click="deleteNode" type="danger" plain>Удалить</el-button>
-      <div v-if="!nodeData.gd.isScheme">
+      <div v-if="!nodeData.gd.isScheme" class="flex items-center">
+        <el-checkbox v-if="!nodeData.gd.isNew" v-model="nodeData.beginner_in_project" :indeterminate="false" @change="isStart">Начало</el-checkbox>
         <el-button class="config-buttons text-gray-600" @click="hideConfigBar">Отмена</el-button>
         <el-button class="config-buttons text-white bg-blue-700" @click="saveNode">Сохранить</el-button>
       </div>
@@ -49,6 +50,7 @@ import { ConfigAPI } from "@/api/config"
 import { Graph } from "@antv/x6"
 import { uuid } from "@/utils/data/uuid"
 import { UsersAPI } from "@/api/users"
+import { ObjectsAPI } from "@/api/objects"
 import fullName from "@/utils/data/fullName"
 import { DepartmentsAPI } from "@/api/departments"
 import { useRoute } from "vue-router"
@@ -65,6 +67,15 @@ const nodeData = ref()
 watch(
   () => props.cell,
   (value) => {
+    if (value) {
+      value.gd.configData = value.gd.configData.map((item) => {
+        return {
+          ...item,
+          data: JSON.parse(item.data).label,
+        }
+      })
+    }
+
     nodeData.value = value
   },
 )
@@ -133,7 +144,15 @@ const saveNode = async () => {
     } else return item
   })
 
-  console.log(nodeData.value.gd.configData)
+  nodeData.value.gd.configData = nodeData.value.gd.configData.map((item) => {
+    return {
+      ...item,
+      data: JSON.stringify({
+        label: item.data,
+        data: "",
+      }),
+    }
+  })
 
   if (nodeData.value.gd.isNew) {
     const res = await ConfigAPI.createNode({
@@ -153,9 +172,9 @@ const saveNode = async () => {
 
     await ConfigAPI.setResponbleUsers(nodeData.value.id, {
       responsible_persons_scheme: {
-        users_editor: nodeData.value.gd.stageData.checkNames,
+        users_editor: nodeData.value.gd.stageData.responsibleNames,
         users_look: nodeData.value.gd.stageData.watchersNames,
-        users_inspecting: nodeData.value.gd.stageData.responsibleNames,
+        users_inspecting: nodeData.value.gd.stageData.checkNames,
       },
     })
   } catch (e) {
@@ -184,6 +203,22 @@ const deleteNode = async () => {
   } else {
     props.graph.removeNode(props.cell.id)
     hideConfigBar()
+  }
+}
+
+const isStart = async (e) => {
+  try {
+    if (e) {
+      await ConfigAPI.setStart(nodeData.value.id, {
+        id_project: +route.params.id,
+      })
+    } else {
+      await ConfigAPI.removeStart(nodeData.value.id, {
+        id_project: +route.params.id,
+      })
+    }
+  } catch (e) {
+    ElMessage.error("В проекте уже есть начало")
   }
 }
 
@@ -233,5 +268,8 @@ input {
 
 .config-buttons {
   @apply text-xs font-medium p-2.5 rounded-lg;
+}
+.el-checkbox:last-of-type {
+  margin-right: 20px;
 }
 </style>

@@ -1,26 +1,70 @@
 <script setup lang="ts">
 import { ConfigAPI } from "@/api/config"
+import { UsersAPI } from "@/api/users"
+import BaseUser from "@/components/Base/BaseUser.vue"
+import { configComponents } from "@/utils/config-components"
 import { ref, onMounted } from "vue"
 import { useRoute } from "vue-router"
+import router from "../router"
 
 const route = useRoute()
 
 const menu = ref([
   {
-    lable: "Все",
+    label: "Все",
   },
 ])
 
-const data = ref([])
+const userData = ref([])
+
+const name = ref("")
+
+const otherData = ref([])
 
 async function getUserData() {
   const { data } = await ConfigAPI.getNode(route.params.id)
-  data.value = data.fields
-  console.log(data.value)
+  name.value = data.name
+
+  data.fields.forEach((item) => {
+    const data = JSON.parse(item.data)
+    userData.value.push({
+      ...item,
+      ...data,
+    })
+  })
+  return data.project_id
 }
 
-onMounted(() => {
-  getUserData()
+async function getOthersData(id) {
+  otherData.value = []
+  const { data } = await ConfigAPI.getOthersData(id)
+  Object.entries(data).forEach((item) => {
+    item[1].fields.forEach((item) => {
+      const data = JSON.parse(item.data)
+      otherData.value.push({
+        ...item,
+        ...data,
+      })
+    })
+  })
+}
+
+async function done() {
+  try {
+    await UsersAPI.toNextUser(route.params.id)
+    await ConfigAPI.changeNode(route.params.id, {
+      name: name.value,
+      fields: userData.value,
+    })
+    router.push("/user-lc/")
+  } catch (e) {
+    router.push("/user-lc/")
+  }
+}
+
+onMounted(async () => {
+  const id = await getUserData()
+  getOthersData(id)
 })
 </script>
 
@@ -30,13 +74,25 @@ onMounted(() => {
       <div class="mb-1">Просмотр этапов</div>
       <div class="">
         <div class="menu">
-          <div class="menu__item" v-for="(item, index) in menu" :key="index">{{ item.lable }}</div>
+          <div class="menu__item" v-for="(item, index) in menu" :key="index">{{ item.label }}</div>
         </div>
       </div>
     </el-aside>
-    <el-main class="main px-10">
-      <div class="text-3xl font-medium">Все этапы</div>
-      <div class=""></div>
+    <el-main class="main px-10 relative">
+      <div class="text-3xl font-medium mb-5">Все этапы</div>
+      <div class="">
+        <div v-for="(item, idx) in otherData" :key="idx">
+          <component :is="BaseUser" v-model="item.data" :label="item.label" disabled></component>
+        </div>
+      </div>
+      <div class="">
+        <div v-for="(item, idx) in userData" :key="idx">
+          <component :is="BaseUser" v-model="item.data" :label="item.label"></component>
+        </div>
+      </div>
+      <div class="h-24 border-t border-gray-200 absolute bottom-0 left-0 right-0 p-5">
+        <el-button class="user__button" size="default" @click="done">Завершить</el-button>
+      </div>
     </el-main>
   </el-container>
 </template>
@@ -58,5 +114,9 @@ onMounted(() => {
 .main {
   @apply bg-white mx-auto;
   max-width: 650px;
+}
+
+.user__button {
+  @apply w-full rounded-xl bg-blue-700 text-white h-12;
 }
 </style>

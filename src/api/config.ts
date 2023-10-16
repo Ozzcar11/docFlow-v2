@@ -19,6 +19,9 @@ export const ConfigAPI = {
   getProject(id: any) {
     return DefaultAPIInstance.get(`/project/${id}/`)
   },
+  deleteProject(id: any) {
+    return DefaultAPIInstance.delete(`/project/${id}/`)
+  },
   deleteNode(id: any) {
     return DefaultAPIInstance.delete(`/steps/${id}/`)
   },
@@ -42,5 +45,14 @@ export const ConfigAPI = {
   },
   setResponbleUsers(id: any, body: any) {
     return DefaultAPIInstance.put(`/responsible-step-users/${id}/`, body)
+  },
+  getOthersData(id: any) {
+    return DefaultAPIInstance.get(`/project/${id}/finished_steps/`)
+  },
+  setStart(id: any, body: any) {
+    return DefaultAPIInstance.put(`/steps/${id}/set_start/`, body)
+  },
+  removeStart(id: any, body: any) {
+    return DefaultAPIInstance.put(`/steps/${id}/remove_start/`, body)
   },
 }

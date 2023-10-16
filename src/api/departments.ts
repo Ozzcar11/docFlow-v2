@@ -13,4 +13,7 @@ export const DepartmentsAPI = {
   deleteUser(body: any) {
     return DefaultAPIInstance.put("/departments/add_or_remove_users/", body)
   },
+  deleteDepartment(id: any) {
+    return DefaultAPIInstance.delete(`/departments/delete/${id}/`)
+  },
 }

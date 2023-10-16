@@ -9,6 +9,10 @@ import router from "../router"
 import { ref, onMounted } from "vue"
 import type { Ref } from "vue"
 import { ObjectsAPI } from "@/api/objects"
+import CheckIcon from "@/assets/icons/CheckIcon.vue"
+import CloseIcon from "@/assets/icons/CloseIcon.vue"
+
+import { ConfigAPI } from "@/api/config"
 
 const searchValue: Ref<string> = ref("")
 
@@ -21,12 +25,22 @@ const getProjects = async () => {
 
 const newName = ref("")
 
+const startProject = async (id: string) => {
+  await ObjectsAPI.startProject(id)
+  getProjects()
+}
+
 const createObject = async () => {
   const res = await ObjectsAPI.createProject({
     name: newName.value,
   })
   getProjects()
   newName.value = ""
+}
+
+const deleteObject = async (id: string) => {
+  await ConfigAPI.deleteProject(+id)
+  getProjects()
 }
 
 onMounted(() => {
@@ -55,11 +69,29 @@ onMounted(() => {
       <el-table-column prop="user" label="Пользователь" />
       <el-table-column prop="last_change" label="Последнее изменение" />
       <el-table-column prop="date_create" label="Дата создания" />
-      <el-table-column>
+      <el-table-column align="center" label="Редактировать">
         <template #default="{ row: { id } }">
-          <router-link :to="`/project/${id}`">
+          <router-link class="flex justify-center" :to="`/project/${id}`">
             <EditIcon />
           </router-link>
+        </template>
+      </el-table-column>
+      <el-table-column width="" label="Статус">
+        <template #default="{ row: { active, id } }">
+          <div v-if="!active" class="flex cursor-pointer" @click="startProject(id)">
+            <span class="mr-2">Запустить</span>
+            <CheckIcon color="black" />
+          </div>
+          <div v-else>В работе</div>
+        </template>
+      </el-table-column>
+      <el-table-column width="" label="Удалить">
+        <template #default="{ row: { id } }">
+          <el-popconfirm title="Вы уверены что хотите удалить объект?" @confirm="deleteObject(id)" confirm-button-text="Да" cancel-button-text="Нет">
+            <template #reference>
+              <CloseIcon class="cursor-pointer" />
+            </template>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>

@@ -111,7 +111,7 @@ const initDnd = (graph: Graph) => {
       const res = ConfigAPI.saveNode({
         templates_schema: draggingNode.getData().id,
         name: draggingNode.getData().name,
-        project_id: route.params.id,
+        project: route.params.id,
         placement,
         noda_front: cloneNode.id,
       })

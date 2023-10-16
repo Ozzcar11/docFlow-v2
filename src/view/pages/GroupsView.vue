@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import EditIcon from "@/assets/icons/EditIcon.vue"
 import PlusIcon from "@/assets/icons/PlusIcon.vue"
+import CloseIcon from "@/assets/icons/CloseIcon.vue"
 
 import { Search } from "@element-plus/icons-vue"
 
@@ -22,6 +23,11 @@ const tableData = ref([])
 const getDepartments = async () => {
   const { data } = await DepartmentsAPI.getDepartments()
   tableData.value = data
+}
+
+const deleteGroup = async (id) => {
+  await DepartmentsAPI.deleteDepartment(id)
+  getDepartments()
 }
 
 onMounted(() => {
@@ -47,12 +53,21 @@ onMounted(() => {
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="name" label="Название отдела" />
       <el-table-column prop="chief" label="Руководитель" />
-      <el-table-column prop="number_of_stuff" label="Кол-во сотрудников " />
-      <el-table-column width="100">
+      <el-table-column prop="count_users" label="Кол-во сотрудников " />
+      <el-table-column width="50">
         <template #default="{ row: { id } }">
           <router-link :to="`/groups/${id}`">
             <EditIcon />
           </router-link>
+        </template>
+      </el-table-column>
+      <el-table-column width="50">
+        <template #default="{ row: { id } }">
+          <el-popconfirm title="Вы уверены что хотите удалить отдел?" @confirm="deleteGroup(id)" confirm-button-text="Да" cancel-button-text="Нет">
+            <template #reference>
+              <CloseIcon class="cursor-pointer" />
+            </template>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>

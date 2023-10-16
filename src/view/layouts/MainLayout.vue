@@ -10,15 +10,15 @@ const route = useRoute()
 
 const menuItems = [
   {
-    lable: "Объекты",
+    label: "Объекты",
     path: "/",
   },
   {
-    lable: "Пользователи",
+    label: "Пользователи",
     path: "/users/",
   },
   {
-    lable: "Отделы",
+    label: "Отделы",
     path: "/groups/",
   },
 ]
@@ -35,7 +35,7 @@ const logout = () => {
       <div class="text-3xl font-medium mx-5 my-8">К.О.</div>
       <el-menu :router="true" :default-active="route.path" class="border-none">
         <el-menu-item v-for="item in menuItems" :key="item.path" :index="item.path" :route="item.path">
-          <span>{{ item.lable }}</span>
+          <span>{{ item.label }}</span>
         </el-menu-item>
       </el-menu>
       <div class="absolute bottom-0 p-8">

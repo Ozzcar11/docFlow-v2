@@ -1,25 +1,19 @@
 <script lang="ts" setup>
-import DeleteIcon from "@/assets/icons/DeleteIcon.vue"
-
 defineProps<{
   modelValue: string | number | undefined
   twClass?: string
   placeholder?: string
-  label?: boolean,
-  deleteBtn?: boolean
+  label?: string
+  disabled?: boolean
 }>()
 </script>
 
 <template>
-  <div v-if="label">
-    <label class="base-label">Поле для ввода</label>
+  <div>
+    <label class="base-label">{{ label }}</label>
     <div class="flex align-middle">
-       <el-input class="base-input" :class="twClass" :modelValue="modelValue" :placeholder="placeholder ?? 'Введите текст'" @input="$emit('update:modelValue', $event)" />
-       <button v-if="!deleteBtn"  class="w-8 h-8 flex justify-center items-center" @click="$emit('deleteField')"><DeleteIcon /></button>
+      <el-input class="base-input" :class="twClass" :modelValue="modelValue" :disabled="disabled" :placeholder="placeholder ?? 'Введите текст'" @input="$emit('update:modelValue', $event)" />
     </div>
-  </div>
-  <div v-else>
-    <el-input class="base-input" :class="twClass" :modelValue="modelValue" :placeholder="placeholder ?? 'Введите текст'" @input="$emit('update:modelValue', $event)" />
   </div>
 </template>
 
@@ -48,6 +42,10 @@ defineProps<{
       }
     }
   }
+}
+
+.el-input.is-disabled .el-input__wrapper {
+  padding: 0 10px;
 }
 
 .base-label {

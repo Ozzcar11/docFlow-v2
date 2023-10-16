@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 withDefaults(
   defineProps<{
-    modelValue: string[] | number
+    modelValue: string[] | number | string
     options: Array<{
       value: string
       label: string

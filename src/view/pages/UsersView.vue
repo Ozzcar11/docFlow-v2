@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import EditIcon from "@/assets/icons/EditIcon.vue"
 import PlusIcon from "@/assets/icons/PlusIcon.vue"
+import CloseIcon from "@/assets/icons/CloseIcon.vue"
 
 import { Search } from "@element-plus/icons-vue"
 
@@ -17,7 +18,11 @@ const tableData = ref([])
 const getUsers = async () => {
   const res = await UsersAPI.getUsers()
   tableData.value = res.data
-  console.log(res.data)
+}
+
+const deleteUser = async (id) => {
+  await UsersAPI.deleteUser(id)
+  getUsers()
 }
 
 onMounted(() => {
@@ -46,11 +51,20 @@ onMounted(() => {
       <el-table-column prop="groups" label="Отдел" />
       <el-table-column prop="job" label="Должность" />
       <!-- <el-table-column prop="lustVisit" label="Последний визит" /> -->
-      <el-table-column>
+      <el-table-column width="50">
         <template #default="{ row: { id } }">
           <router-link :to="`/users/${id}`">
             <EditIcon />
           </router-link>
+        </template>
+      </el-table-column>
+      <el-table-column width="50">
+        <template #default="{ row: { id } }">
+          <el-popconfirm title="Вы уверены что хотите удалить пользователя?" @confirm="deleteUser(id)" confirm-button-text="Да" cancel-button-text="Нет">
+            <template #reference>
+              <CloseIcon class="cursor-pointer" />
+            </template>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>

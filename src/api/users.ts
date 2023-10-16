@@ -7,6 +7,9 @@ export const UsersAPI = {
   getUser(id: any) {
     return DefaultAPIInstance.get(`/users/${id}/`)
   },
+  deleteUser(id: any) {
+    return DefaultAPIInstance.delete(`/users/${id}/`)
+  },
   createUser(body: any) {
     return DefaultAPIInstance.post("/users/", body)
   },
@@ -18,5 +21,8 @@ export const UsersAPI = {
   },
   getUserProject() {
     return DefaultAPIInstance.get(`/steps/user_steps/`)
+  },
+  toNextUser(id: any) {
+    return DefaultAPIInstance.post(`/step-by-step/${id}/`)
   },
 }

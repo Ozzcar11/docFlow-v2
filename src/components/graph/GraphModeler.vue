@@ -251,9 +251,11 @@ const registerEvents = (graph: Graph) => {
     if (res) {
       secondRes = await ConfigAPI.getNode(res.data.id)
       console.log(secondRes)
+
       selected_cell.value = {
         id: secondRes.data.id,
         frontId: secondRes.data.noda_front,
+        beginner_in_project: secondRes.data.beginner_in_project,
         gd: {
           stageData: {
             checkNames: secondRes.data.responsible_persons_scheme.users_editor,
@@ -272,6 +274,7 @@ const registerEvents = (graph: Graph) => {
       console.log(secondRes)
       selected_cell.value = {
         id: secondRes.data.id,
+        beginner_in_project: secondRes.data.beginner_in_project,
         gd: {
           stageData: {
             checkNames: secondRes.data.responsible_persons_scheme.users_editor,

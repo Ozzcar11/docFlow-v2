@@ -7,4 +7,7 @@ export const ObjectsAPI = {
   createProject(body: any) {
     return DefaultAPIInstance.post("/project/", body)
   },
+  startProject(id: string) {
+    return DefaultAPIInstance.put(`/project/${id}/start_project/`)
+  },
 }

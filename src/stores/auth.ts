@@ -29,7 +29,7 @@ export const useAuthStore = defineStore("authApiStore", () => {
     }
   }
 
-  function logout(body: any) {
+  function logout() {
     localStorage.removeItem("TTEtoken")
     localStorage.removeItem("accessToken")
     localStorage.removeItem("refreshToken")

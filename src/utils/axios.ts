@@ -14,12 +14,12 @@ export const DefaultAPIInstance = axios.create(loginConfig)
 DefaultAPIInstance.interceptors.request.use(async (config) => {
   const authStore = useAuthStore()
   const TTEtoken = localStorage.getItem("TTEtoken")
-//   if (TTEtoken) {
-//     if (new Date().getTime() / 1000 > TTEtoken) {
-//       const res = await AuthAPI.refreshToken()
-//       authStore.refreshToken(res.data.access)
-//     }
-//   }
+  //   if (TTEtoken) {
+  //     if (new Date().getTime() / 1000 > TTEtoken) {
+  //       const res = await AuthAPI.refreshToken()
+  //       authStore.refreshToken(res.data.access)
+  //     }
+  //   }
 
   const accessToken = localStorage.getItem("accessToken")
   if (accessToken) config.headers["authorization"] = `Bearer ${accessToken}`
@@ -30,13 +30,16 @@ DefaultAPIInstance.interceptors.request.use(async (config) => {
 DefaultAPIInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-   //  const originalRequest = error.config
-   //  if (error.code === 401) {
-   //    const res = await AuthAPI.refreshToken()
-   //    originalRequest._retry = true
-   //    store.commit("refreshToken", res.data.access)
-   //    return axios(originalRequest)
-   //  }
-    return Promise.reject(error)
+    if (error.message.includes(401)) {
+      useAuthStore().logout()
+    }
+      //  const originalRequest = error.config
+      //  if (error.code === 401) {
+      //    const res = await AuthAPI.refreshToken()
+      //    originalRequest._retry = true
+      //    store.commit("refreshToken", res.data.access)
+      //    return axios(originalRequest)
+      //  }
+      return Promise.reject(error)
   },
 )

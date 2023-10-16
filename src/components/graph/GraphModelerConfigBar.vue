@@ -54,7 +54,7 @@ import { DepartmentsAPI } from "@/api/departments"
 import { useRoute } from "vue-router"
 
 const props = defineProps<{
-  graph: Graph
+  graph: Graph | undefined
   cell: any
 }>()
 
@@ -132,6 +132,8 @@ const saveNode = async () => {
       return item
     } else return item
   })
+
+  console.log(nodeData.value.gd.configData)
 
   if (nodeData.value.gd.isNew) {
     const res = await ConfigAPI.createNode({

@@ -250,7 +250,7 @@ const registerEvents = (graph: Graph) => {
 
     if (res) {
       secondRes = await ConfigAPI.getNode(res.data.id)
-      console.log(secondRes.data)
+      console.log(secondRes)
       selected_cell.value = {
         id: secondRes.data.id,
         frontId: secondRes.data.noda_front,
@@ -269,7 +269,7 @@ const registerEvents = (graph: Graph) => {
       }
     } else {
       secondRes = await ConfigAPI.getNode(cell.getData().id)
-      console.log(secondRes.data)
+      console.log(secondRes)
       selected_cell.value = {
         id: secondRes.data.id,
         gd: {

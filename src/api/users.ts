@@ -13,6 +13,9 @@ export const UsersAPI = {
   changeUser(id: any, body: any) {
     return DefaultAPIInstance.put(`/users/${id}/`, body)
   },
+  getUserProjects() {
+    return DefaultAPIInstance.get(`/steps/user_steps/`)
+  },
   getUserProject() {
     return DefaultAPIInstance.get(`/steps/user_steps/`)
   },

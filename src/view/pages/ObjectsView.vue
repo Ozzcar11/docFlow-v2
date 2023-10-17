@@ -64,7 +64,7 @@ onMounted(() => {
     </div> -->
   </el-header>
   <el-main>
-    <el-table :data="tableData" style="width: 100%">
+    <el-table v-loading="" :data="tableData" style="width: 100%">
       <el-table-column prop="name" label="Название" />
       <el-table-column prop="user" label="Пользователь" />
       <el-table-column prop="last_change" label="Последнее изменение" />

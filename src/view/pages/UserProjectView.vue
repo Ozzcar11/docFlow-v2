@@ -80,12 +80,13 @@ onMounted(async () => {
     </el-aside>
     <el-main class="main px-10 relative">
       <div class="text-3xl font-medium mb-5">Все этапы</div>
-      <div class="">
+      <div v-if="otherData.length !== 0" class="pb-4 border-b border-gray-300">
+        <div class="opacity-40">Предыдущие этапы</div>
         <div v-for="(item, idx) in otherData" :key="idx">
           <component :is="BaseUser" v-model="item.data" :label="item.label" disabled></component>
         </div>
       </div>
-      <div class="">
+      <div class="pb-4">
         <div v-for="(item, idx) in userData" :key="idx">
           <component :is="BaseUser" v-model="item.data" :label="item.label"></component>
         </div>

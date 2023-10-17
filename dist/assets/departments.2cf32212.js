@@ -1,0 +1,1 @@
+import{D as t}from"./index.73329af3.js";const n={getDepartments(){return t.get("/departments/")},getDepartment(e){return t.get(`/departments/${e}/`)},createDepartment(e){return t.post("/departments/create/",e)},deleteUser(e){return t.put("/departments/add_or_remove_users/",e)},deleteDepartment(e){return t.delete(`/departments/delete/${e}/`)}};export{n as D};

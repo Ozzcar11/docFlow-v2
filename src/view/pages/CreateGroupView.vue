@@ -21,7 +21,11 @@ const addGroup = async () => {
     const res = await DepartmentsAPI.createDepartment(groupData.value)
     router.push("/groups/")
   } catch (e) {
-    ElMessage.error("Проверьте правильность внесённых данных")
+    if (e.response.data[0] === "User is already responsible for another department") {
+      ElMessage.error("Данный пользователь уже является руководителем другого отдела")
+    } else {
+      ElMessage.error("Проверьте правильность внесённых данных")
+    }
   }
 }
 

@@ -290,6 +290,7 @@ const registerEvents = (graph: Graph) => {
       }
     }
   })
+  
 
   graph.on("cell:unselected", ({ cell, options }) => {
     if (selected_cell.value != null) selected_cell.value = undefined

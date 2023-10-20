@@ -7,6 +7,8 @@ import { ref, onMounted } from "vue"
 import { useRoute } from "vue-router"
 import router from "../router"
 
+import BackIcon from "@/assets/icons/BackIcon.vue"
+
 const route = useRoute()
 
 const menu = ref([
@@ -50,11 +52,21 @@ async function getOthersData(id) {
 }
 
 async function done() {
+  const res = userData.value.map((item) => {
+    return {
+      ...item,
+      data: JSON.stringify({
+        label: item.label,
+        data: item.data,
+      }),
+    }
+  })
+
   try {
     await UsersAPI.toNextUser(route.params.id)
     await ConfigAPI.changeNode(route.params.id, {
       name: name.value,
-      fields: userData.value,
+      fields: res,
     })
     router.push("/user-lc/")
   } catch (e) {
@@ -70,13 +82,17 @@ onMounted(async () => {
 
 <template>
   <el-container class="container">
-    <el-aside width="280px" class="p-4 font-medium bg-white">
+    <el-aside width="280px" class="p-4 font-medium bg-white relative">
       <div class="mb-1">Просмотр этапов</div>
       <div class="">
         <div class="menu">
           <div class="menu__item" v-for="(item, index) in menu" :key="index">{{ item.label }}</div>
         </div>
       </div>
+      <el-button type="primary" class="menu__btn-hollow" @click="router.push('/user-lc/')">
+        <BackIcon class="w-6 h-6 mr-2" />
+        К списку
+      </el-button>
     </el-aside>
     <el-main class="main px-10 relative">
       <div class="text-3xl font-medium mb-5">Все этапы</div>
@@ -119,5 +135,9 @@ onMounted(async () => {
 
 .user__button {
   @apply w-full rounded-xl bg-blue-700 text-white h-12;
+}
+
+.menu__btn-hollow {
+  @apply text-black rounded-xl bg-white border-gray-300 hover:bg-white hover:text-black absolute bottom-5 left-4 right-4;
 }
 </style>

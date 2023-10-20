@@ -17,7 +17,7 @@ export const ConfigAPI = {
     return DefaultAPIInstance.post(`/steps/`, body)
   },
   getProject(id: any) {
-    return DefaultAPIInstance.get(`/project/${id}/`)
+    return DefaultAPIInstance.get(`/projects/${id}/`)
   },
   deleteProject(id: any) {
     return DefaultAPIInstance.delete(`/project/${id}/`)

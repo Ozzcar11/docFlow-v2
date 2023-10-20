@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { ref } from "vue"
 import { ElMessage } from "element-plus"
 import { useAuthStore } from "@/stores/auth"
@@ -61,4 +61,59 @@ const login = async () => {
     @apply mt-12 font-medium bg-blue-600 px-4 py-2.5 rounded-xl h-10 text-white;
   }
 }
-</style>
+</style> -->
+
+<script setup lang="ts">
+import { Addon, Graph, Node as AntvNode } from "@/components/@antv/x6"
+
+import { ref, onMounted } from "vue"
+
+import { graph_options_defaults, antvMetadata } from "@/utils/antv-model"
+
+const graph = ref<Graph | undefined>()
+
+function init() {
+  const container = document.getElementById("modeler-container")!
+
+  graph.value = new Graph({
+    ...graph_options_defaults,
+
+    autoResize: true,
+    container,
+  })
+
+  dnd.value = new Addon.Dnd({
+    target: graph.value,
+    scaled: false,
+    animation: true,
+    getDropNode(draggingNode) {
+      return draggingNode.clone()
+    },
+  })
+}
+
+const dnd = ref()
+
+function startDrag(e) {
+  const dragbleNode = graph.value!.createNode(
+    antvMetadata({
+      id: 10,
+      name: "test",
+    }),
+  )
+  dnd.value?.start(dragbleNode!, e)
+}
+
+onMounted(() => {
+  init()
+})
+</script>
+
+<template>
+  <div class="flex">
+    <div id="modeler-container" style="width: 500px; height: 500px"></div>
+    <div class="">
+      <div class="rounded-full bg-red-500 w-16 h-16" @click="startDrag($event)"></div>
+    </div>
+  </div>
+</template>

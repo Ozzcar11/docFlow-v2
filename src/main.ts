@@ -8,7 +8,7 @@ import { layouts } from './plugins/layouts';
 import 'element-plus/dist/index.css'
 import "vue-toastification/dist/index.css";
 
-import './style/index.scss'
+import '@/assets/style/index.scss'
 
 createApp(App)
   .use(ElementPlus)

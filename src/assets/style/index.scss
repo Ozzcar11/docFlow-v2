@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "./variables.scss";
+
 @mixin font-face($name, $file, $weight: 400, $style: normal) {
   @font-face {
     font-family: "#{$name}";
@@ -19,10 +21,7 @@
 
 @layer base {
   html {
-    font-family:
-      Inter,
-      system-ui,
-      sans-serif;
+    font-family: Inter, system-ui, sans-serif;
   }
 }
 

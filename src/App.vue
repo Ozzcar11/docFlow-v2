@@ -8,12 +8,9 @@ const getLayout = computed(() => (route.meta.layout ?? "default") + "-layout")
 </script>
 
 <template>
-  <div class="min-h-screen">
-    {{ getLayout }}
-    <component :is="getLayout">
-      <router-view />
-    </component>
-  </div>
+  <component :is="getLayout">
+    <router-view />
+  </component>
 </template>
 
 <style lang="scss"></style>

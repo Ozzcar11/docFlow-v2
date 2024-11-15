@@ -1,8 +1,9 @@
+@forward "./variables.scss";
+@forward "./animations.scss";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import "./variables.scss";
 
 @mixin font-face($name, $file, $weight: 400, $style: normal) {
   @font-face {
@@ -56,12 +57,12 @@ textarea.style-soft {
 }
 
 input[type="text"].style-soft {
-  @apply flex-1 block w-full rounded-none rounded-md sm:text-sm border-gray-300;
+  @apply flex-1 block w-full rounded-md sm:text-sm border-gray-300;
   @apply focus:ring-blue-500 focus:border-blue-500;
 }
 
 .node {
-  @apply block w-full h-full flex items-center pl-3 text-sm;
+  @apply w-full h-full flex items-center pl-3 text-sm;
   @apply rounded;
 
   border: 1px solid rgb(177, 177, 177);
@@ -145,9 +146,6 @@ input[type="text"].style-soft {
   }
 
   &.x6-edge {
-    &:hover path:nth-child(2) {
-    }
-
     &.x6-edge-selected path {
       stroke: #1890ff;
       stroke-width: 1.5px !important;

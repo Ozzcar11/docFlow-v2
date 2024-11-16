@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import { provide } from "vue"
+import { useMouse } from "@/composables/useMouse"
+
+const { x, y } = useMouse()
 
 const test = (test: string) => {
   console.log("test", test)
@@ -10,6 +13,7 @@ provide("test", test)
 
 <template>
   <div class="layout">
+  <div class="layout__top-left">{{ '<h1>' }} </div>
     <div class="layout__content">
       <slot />
     </div>
@@ -30,8 +34,20 @@ provide("test", test)
     height: 600px;
     background-color: var(--surface-white);
     border-radius: 3%;
-    box-shadow: 0 0 40px 10px var(--surface-purple);
     transition: box-shadow 0.5s ease-out;
+    animation: pulse 2s infinite ease-in;
+  }
+
+  &__top-left {
+    color: #fff;
+    font-size: 92px;
+    font-weight: 700;
+    position: absolute;
+    top: 10%;
+    left: 5%;
+    width: 100px;
+    height: 100px;
+    transform: rotate(-30deg);
   }
 }
 </style>
